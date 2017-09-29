@@ -9,33 +9,27 @@ import PropTypes from 'prop-types';
  * @param arguments
  * @returns {function(*)}
  */
-export const contextTypes = (...params) => {
+export const contextTypes = (...params) => (targetClass) => {
+    params.forEach((type) => {
+        targetClass.contextTypes = targetClass.contextTypes || {};
+        if (!targetClass.contextTypes.hasOwnProperty(type)) {
+            switch (type) {
+                case 'store':
+                case 'router':
+                    targetClass.contextTypes[type] = PropTypes.object.isRequired;
+                    break;
 
-    return (targetClass) => {
-        params.forEach((type) => {
-            targetClass.contextTypes  = targetClass.contextTypes || {};
-            if(!targetClass.contextTypes.hasOwnProperty(type)){
-                switch (type) {
-                    case 'store':
-                    case 'router':
-                        targetClass.contextTypes[type] = PropTypes.object.isRequired;
-                        break;
-
-                }
             }
-        })
-    }
-}
+        }
+    });
+};
 
 /**
  * 验证propTypes的装饰器
  * @param propTypesChecker
  * @returns {function(*)}
  */
-export const propTypes = (propTypesChecker = {}) =>{
-
-    return (targetClass) => {
-        targetClass.propTypes = propTypesChecker;
-    }
-}
+export const propTypes = (propTypesChecker = {}) => (targetClass) => {
+    targetClass.propTypes = propTypesChecker;
+};
 

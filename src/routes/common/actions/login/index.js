@@ -4,8 +4,8 @@
 
 
 import {
-	login
-} from '../../webAPI/login'
+    login
+} from '../../webAPI/login';
 
 /**
  * 执行登陆
@@ -13,7 +13,7 @@ import {
  * @param password
  * @returns {*}
  */
-export function doLoginAction(email,password) {
+export function doLoginAction(email, password) {
 
-	return login(email,password)
+    return login(email, password);
 }

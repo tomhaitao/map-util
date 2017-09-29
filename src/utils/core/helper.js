@@ -3,7 +3,7 @@
  */
 import moment from 'moment';
 import _ from 'lodash';
-import {render as reactDomRender,unmountComponentAtNode} from 'react-dom';
+import { render as reactDomRender, unmountComponentAtNode } from 'react-dom';
 
 class Helper {
 
@@ -11,37 +11,37 @@ class Helper {
 	 * 渲染弹出窗Modal
      * @param component //reactElement react组件
      */
-	renderModal(component){
-		const domId = 'tj-render-dom';
+    renderModal(component) {
+        const domId = 'tj-render-dom';
 
-		if($("#"+domId).length < 1) {
+        if ($(`#${domId}`).length < 1) {
             $('<div />', {
-                id: domId,
-            }).appendTo("body");
+                id: domId
+            }).appendTo('body');
         }
 
-        const domObject = document.querySelector("#"+domId);
+        const domObject = document.querySelector(`#${domId}`);
 
-		unmountComponentAtNode(domObject);
+        unmountComponentAtNode(domObject);
 
-        reactDomRender(component,domObject);
-	}
+        reactDomRender(component, domObject);
+    }
 
-	/**
+    /**
 	 * 跳转页面
 	 * @param url
 	 * @param timeout
 	 */
-	redirect (url, timeout) {
-		if (_.isNumber(url) && typeof timeout == "undefined") {
-			timeout = url;
-			url = null;
-		}
+    redirect(url, timeout) {
+        if (_.isNumber(url) && typeof timeout === 'undefined') {
+            timeout = url;
+            url = null;
+        }
 
-		setTimeout(function () {
-			location.href = url || location.href;
-		}, timeout || 0);
-	}
+        setTimeout(() => {
+            location.href = url || location.href;
+        }, timeout || 0);
+    }
 
     /**
 	 * 浮点型保留小数
@@ -50,10 +50,10 @@ class Helper {
      * @param {Mixed} defaultVal 格式化错误的默认值
      * @return {string}
      */
-	toFixed(num,fixNum = 2, defaultVal = '-'){
-		let result =  Number(num).toFixed(fixNum);
-		return _.isNaN(result) || result == 'NaN' ? defaultVal : result;
-	}
+    toFixed(num, fixNum = 2, defaultVal = '-') {
+        const result = Number(num).toFixed(fixNum);
+        return _.isNaN(result) || result == 'NaN' ? defaultVal : result;
+    }
 
     /**
      * 是否是一个真实的数值字符串
@@ -61,7 +61,7 @@ class Helper {
      */
     isRealNumeric(value) {
     	return /^(\d+\.)?\d+$/.test(value);
-	}
+    }
 
     /**
 	 * Mb转换成Gb
@@ -71,10 +71,10 @@ class Helper {
      * @return {*}
      * @constructor
      */
-	MbToGb(value, fixNum = 2, defaultVal = '-'){
-		let result = value /1024;
-		return fixNum ?( _.isNaN(result) || result == 'NaN' ? defaultVal : result ): this.toFixed(result,fixNum,defaultVal);
-	}
+    MbToGb(value, fixNum = 2, defaultVal = '-') {
+        const result = value / 1024;
+        return fixNum ? (_.isNaN(result) || result == 'NaN' ? defaultVal : result) : this.toFixed(result, fixNum, defaultVal);
+    }
 
 
     /**
@@ -83,8 +83,8 @@ class Helper {
      * @param {string} template
      * @return {string}
      */
-    dateFormat(date = _.now(), template = 'YYYY-MM-DD HH:mm:ss'){
-        if(this.isRealNumeric(date)){
+    dateFormat(date = _.now(), template = 'YYYY-MM-DD HH:mm:ss') {
+        if (this.isRealNumeric(date)) {
             date = parseInt(date);
         }
 
@@ -99,12 +99,12 @@ class Helper {
      * @return {*}
      */
     apply(func, context, args = []) {
-		if (_.isFunction(func)) {
-			return func.apply(context, args);
-		}
+        if (_.isFunction(func)) {
+            return func.apply(context, args);
+        }
 
-		return null;
-	}
+        return null;
+    }
 
     /**
      * 回调一个函数,并应用context和一个参数列表
@@ -113,7 +113,7 @@ class Helper {
      * @param {...*} args
      * @return {*}
      */
-    call (func, context, ...args){
+    call(func, context, ...args) {
     	return this.apply(func, context, args);
     }
 
@@ -123,18 +123,18 @@ class Helper {
      *
      * @returns {Object}
      */
-    getUrlParams () {
-		let urlParams = {};
-		const queryString = decodeURIComponent(window.location.search.substr(1));
-		if (queryString) {
-			_.each(queryString.split('&'), (paramString) => {
-				const param = paramString.split('=');
-				urlParams[param[0]] = param[1];
-			});
-		}
+    getUrlParams() {
+        const urlParams = {};
+        const queryString = decodeURIComponent(window.location.search.substr(1));
+        if (queryString) {
+            _.each(queryString.split('&'), (paramString) => {
+                const param = paramString.split('=');
+                urlParams[param[0]] = param[1];
+            });
+        }
 
-		return urlParams;
-	};
+        return urlParams;
+    }
 
     /**
      * 获取URL参数
@@ -142,7 +142,7 @@ class Helper {
      * @param {string} name
      * @returns {string}
      */
-    getUrlParam (name) {
+    getUrlParam(name) {
     	return this.getUrlParams()[name];
     }
 
@@ -150,28 +150,28 @@ class Helper {
      * 生成class
      * @param {...*=} args
      */
-    classNames(...args){
+    classNames(...args) {
 
-		const classList = [];
+        const classList = [];
 
-		_.each(args, (arg) => {
+        _.each(args, (arg) => {
 
-			if (_.isString(arg)) {
+            if (_.isString(arg)) {
 
-				classList.push(arg);
+                classList.push(arg);
 
-			} else if (_.isObject(arg)) {
+            } else if (_.isObject(arg)) {
 
-				_.each(arg, (value, key) => {
-					if (value) {
-						classList.push(key);
-					}
-				});
-			}
-		});
+                _.each(arg, (value, key) => {
+                    if (value) {
+                        classList.push(key);
+                    }
+                });
+            }
+        });
 
-		return _.uniq(classList).join(' ');
-	}
+        return _.uniq(classList).join(' ');
+    }
 
 
     /**
@@ -182,57 +182,56 @@ class Helper {
      * @param {string=} thousandsSep
      * @return {string}
      */
-    numberFormat (number, decimals = 0, decimalPoint = '.', thousandsSep = ','){
+    numberFormat(number, decimals = 0, decimalPoint = '.', thousandsSep = ',') {
 
-		/* eslint-disable no-param-reassign */
+        /* eslint-disable no-param-reassign */
 
-		number = _.toNumber(number);
-		decimals = _.clamp(decimals, 0, 10);
+        number = _.toNumber(number);
+        decimals = _.clamp(decimals, 0, 10);
 
-		const origDec = (number.toString().split('.')[1] || '').length;
-		const absNumber = Math.abs(number);
+        const origDec = (number.toString().split('.')[1] || '').length;
+        const absNumber = Math.abs(number);
 
-		let decimalComponent;
-		let ret;
+        let decimalComponent;
+        let ret;
 
-		if (decimals === -1) {
+        if (decimals === -1) {
 
-			decimals = Math.min(origDec, 20);
+            decimals = Math.min(origDec, 20);
 
-		} else if (!_.isNumber(decimals)) {
+        } else if (!_.isNumber(decimals)) {
 
-			decimals = 2;
-		}
+            decimals = 2;
+        }
 
-		const strinteger = String(parseInt(absNumber.toFixed(decimals), 10));
+        const strinteger = String(parseInt(absNumber.toFixed(decimals), 10));
 
-		// 需要几个千分位分隔符
-		const thousands = strinteger.length > 3 ? strinteger.length % 3 : 0;
+        // 需要几个千分位分隔符
+        const thousands = strinteger.length > 3 ? strinteger.length % 3 : 0;
 
-		// 负数
-		ret = number < 0 ? '-' : '';
+        // 负数
+        ret = number < 0 ? '-' : '';
 
-		ret += thousands ? strinteger.substr(0, thousands) + thousandsSep : '';
+        ret += thousands ? strinteger.substr(0, thousands) + thousandsSep : '';
 
-		// 在千分位加上分隔符
-		ret += strinteger.substr(thousands).replace(/(\d{3})(?=\d)/g, `$1${thousandsSep}`);
+        // 在千分位加上分隔符
+        ret += strinteger.substr(thousands).replace(/(\d{3})(?=\d)/g, `$1${thousandsSep}`);
 
-		// 小数点
-		if (decimals) {
+        // 小数点
+        if (decimals) {
 
-			/* eslint-disable no-restricted-properties */
-			decimalComponent = Math.abs((absNumber - strinteger) + (Math.pow(10, -Math.max(decimals, origDec) - 1)));
-			/* eslint-enable no-restricted-properties */
+            /* eslint-disable no-restricted-properties */
+            decimalComponent = Math.abs((absNumber - strinteger) + (Math.pow(10, -Math.max(decimals, origDec) - 1)));
+            /* eslint-enable no-restricted-properties */
 
-			ret += decimalPoint + decimalComponent.toFixed(decimals).slice(2);
-		}
+            ret += decimalPoint + decimalComponent.toFixed(decimals).slice(2);
+        }
 
-		/* eslint-enable no-param-reassign */
-		return ret;
-	}
+        /* eslint-enable no-param-reassign */
+        return ret;
+    }
 
 }
 
 export default new Helper();
-
 

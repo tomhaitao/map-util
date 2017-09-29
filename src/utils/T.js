@@ -16,26 +16,26 @@ import { setStorage, getStorage, clearStorage, keepStorage, removeStorage } from
  * @type {{prompt: Prompt, helper: Helper, decorator: {contextTypes: contextTypes, propTypes: propTypes}, request: {get: get, post: post, postJSON: postJSON, upload: upload, all: all, del: del, put: put, formatUrlParams: formatUrlParams}, storage: {setStorage: setStorage, getStorage: getStorage, clearStorage: clearStorage, keepStorage: keepStorage, removeStorage: removeStorage}, lodash, cookies: *, queryString}}
  */
 const T = {
-	prompt,
+    prompt,
 
-	helper,
+    helper,
 
-	decorator:{ contextTypes, propTypes },
+    decorator: { contextTypes, propTypes },
 
-	request: { get, post, postJSON, upload, all, del, put, formatUrlParams },
+    request: { get, post, postJSON, upload, all, del, put, formatUrlParams },
 
-	storage: { setStorage, getStorage, clearStorage, keepStorage, removeStorage },
+    storage: { setStorage, getStorage, clearStorage, keepStorage, removeStorage },
 
-	//说明文档:http://www.css88.com/doc/lodash/
-	lodash:lodash,
+    // 说明文档:http://www.css88.com/doc/lodash/
+    lodash,
 
-	//说明文档:https://github.com/js-cookie/js-cookie
-	cookies:cookies,
+    // 说明文档:https://github.com/js-cookie/js-cookie
+    cookies,
 
-	//说明文档:https://github.com/sindresorhus/query-string
-    queryString:queryString,
+    // 说明文档:https://github.com/sindresorhus/query-string
+    queryString
 
-}
+};
 
 export default T;
 

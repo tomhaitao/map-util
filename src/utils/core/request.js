@@ -1,46 +1,46 @@
 /**
  * Created by chencheng on 2017/6/14.
  */
-import axios from 'axios'
+import axios from 'axios';
 import EnumRouter from '../../constants/EnumRouter';
 
-//解决IE报warning Unhandled Rejections Error 参数书不正确的问题
-Promise._unhandledRejectionFn = function (rejectError) {}
+// 解决IE报warning Unhandled Rejections Error 参数书不正确的问题
+Promise._unhandledRejectionFn = function (rejectError) {};
 
 const Singleton = (function () {
-	let instantiated;
+    let instantiated;
 
-	function init() {
+    function init() {
 
-		return axios.create({
-			baseURL:ENV.mock.isStart ? ENV.mock.apiDomain : ENV.apiDomain,
+        return axios.create({
+            baseURL: ENV.mock.isStart ? ENV.mock.apiDomain : ENV.apiDomain,
 
-			// `withCredentials`指示是否跨站点访问控制请求
-			withCredentials: true,
+            // `withCredentials`指示是否跨站点访问控制请求
+            withCredentials: true,
 
-			// “responseType”表示服务器将响应的数据类型
-			// 包括 'arraybuffer', 'blob', 'document', 'json', 'text', 'stream'
-			responseType: 'json',
+            // “responseType”表示服务器将响应的数据类型
+            // 包括 'arraybuffer', 'blob', 'document', 'json', 'text', 'stream'
+            responseType: 'json',
 
-			//headers`是要发送的自定义 headers
-			headers: {
-				// 'X-Requested-With': 'XMLHttpRequest'
-			},
+            // headers`是要发送的自定义 headers
+            headers: {
+                // 'X-Requested-With': 'XMLHttpRequest'
+            }
 
-		});
-	}
+        });
+    }
 
-	return {
-		getInstance: function () {
+    return {
+        getInstance() {
 
-			if (!instantiated) {
-				instantiated = init();
-			}
+            if (!instantiated) {
+                instantiated = init();
+            }
 
-			return instantiated;
-		}
-	};
-})();
+            return instantiated;
+        }
+    };
+}());
 
 
 /**
@@ -49,38 +49,37 @@ const Singleton = (function () {
  * @return {Promise}
  * @private
  */
-const _request = (options = {})=>{
-	const successCode = '0';
-	const noLoginCode = 'uupm.user.not.login';
+const _request = (options = {}) => {
+    const successCode = '0';
+    const noLoginCode = 'uupm.user.not.login';
 
-	return new Promise((resolve,reject)=>{
+    return new Promise((resolve, reject) => {
 
-		Singleton.getInstance().request(options).then((resp)=>{
+        Singleton.getInstance().request(options).then((resp) => {
 
-			const {data,code,msg} = resp.data;
+            const { data, code, msg } = resp.data;
 
-			if(successCode == code){
-				resolve({code,data,msg})
-			}
-			//判断是否登录
-			else if(noLoginCode == code){
-				location.href = EnumRouter.login;
+            if (successCode == code) {
+                resolve({ code, data, msg });
+            }
+            // 判断是否登录
+            else if (noLoginCode == code) {
+                location.href = EnumRouter.login;
 
-			}else{
-				reject({code,data,msg})
-			}
+            } else {
+                reject({ code, data, msg });
+            }
 
-		}).catch((error)=>{
-			reject({
-				code:"error",
-				data:null,
-				msg:error.message
-			})
-		})
+        }).catch((error) => {
+            reject({
+                code: 'error',
+                data: null,
+                msg: error.message
+            });
+        });
 
-	})
-}
-
+    });
+};
 
 
 /**
@@ -90,14 +89,14 @@ const _request = (options = {})=>{
  * @param {object} options
  * @returns {Promise}
  */
-export function get(url,params = {},options = {}){
-    Object.assign(options,{
+export function get(url, params = {}, options = {}) {
+    Object.assign(options, {
         url,
-        method:'get',
-        params:params,
+        method: 'get',
+        params
     });
 
-	return _request(options);
+    return _request(options);
 }
 
 /**
@@ -107,22 +106,22 @@ export function get(url,params = {},options = {}){
  * @param {object} options
  * @returns {Promise}
  */
-export function post(url,params = {},options = {}){
-    let requestParams = new URLSearchParams();
-    for(let [k,v] of Object.entries(params)) {
+export function post(url, params = {}, options = {}) {
+    const requestParams = new URLSearchParams();
+    for (const [k, v] of Object.entries(params)) {
         requestParams.append(k, v);
     }
 
     options = Object.assign({
         url,
-        method:'post',
-        data:requestParams,
-        headers:{
-            "Content-Type":'application/x-www-form-urlencoded'
+        method: 'post',
+        data: requestParams,
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
         }
-	},options)
+    }, options);
 
-	return _request(options);
+    return _request(options);
 }
 
 
@@ -133,17 +132,17 @@ export function post(url,params = {},options = {}){
  * @param {object} options
  * @returns {Promise}
  */
-export function postJSON(url,params = {},options = {}){
+export function postJSON(url, params = {}, options = {}) {
     options = Object.assign({
-		url,
-        method:'post',
-        data:params,
-        headers:{
-            "Content-Type": 'application/json'
+        url,
+        method: 'post',
+        data: params,
+        headers: {
+            'Content-Type': 'application/json'
         }
-    },options);
+    }, options);
 
-	return _request(options);
+    return _request(options);
 }
 
 
@@ -155,29 +154,29 @@ export function postJSON(url,params = {},options = {}){
  * @param {Object} options
  * @returns {Promise}
  */
-export function upload(url,params = {},onUploadProgress = (progressEvent) =>{},options = {}){
+export function upload(url, params = {}, onUploadProgress = (progressEvent) => {}, options = {}) {
 
-	if(!(params instanceof FormData)){
-		let formData = new FormData();
-		for(let [k,v] of Object.entries(params)){
-			formData.append(k,v);
-		}
-		params = formData
-	}
+    if (!(params instanceof FormData)) {
+        const formData = new FormData();
+        for (const [k, v] of Object.entries(params)) {
+            formData.append(k, v);
+        }
+        params = formData;
+    }
 
     options = Object.assign({
         url,
-        method:'post',
-        data:params,
-        onUploadProgress:  onUploadProgress,	//允许处理上传的进度事件
+        method: 'post',
+        data: params,
+        onUploadProgress,	// 允许处理上传的进度事件
 
-        headers:{
-            "Content-Type":'multipart/form-data'
+        headers: {
+            'Content-Type': 'multipart/form-data'
         }
-    },options)
+    }, options);
 
 
-	return _request(options);
+    return _request(options);
 }
 
 /**
@@ -187,15 +186,15 @@ export function upload(url,params = {},onUploadProgress = (progressEvent) =>{},o
  * @param {Object} options
  * @returns {Promise}
  */
-export function del(url,params = {},options = {}) {
+export function del(url, params = {}, options = {}) {
     options = Object.assign({
         url,
-        method:'delete',
-        data:params,
-        headers:{
-            "Content-Type":'application/json'
+        method: 'delete',
+        data: params,
+        headers: {
+            'Content-Type': 'application/json'
         }
-    },options)
+    }, options);
 
     return _request(options);
 }
@@ -208,15 +207,15 @@ export function del(url,params = {},options = {}) {
  * @param {Object} options
  * @returns {Promise}
  */
-export function put(url,params = {},options = {}) {
+export function put(url, params = {}, options = {}) {
     options = Object.assign({
         url,
-        method:'put',
-        data:params,
-        headers:{
-            "Content-Type":'application/json'
+        method: 'put',
+        data: params,
+        headers: {
+            'Content-Type': 'application/json'
         }
-    },options)
+    }, options);
 
     return _request(options);
 }
@@ -228,7 +227,7 @@ export function put(url,params = {},options = {}) {
  */
 export function all(args = null) {
 
-	return Array.isArray(args) ? Promise.all(args) :Promise.all([...arguments]);
+    return Array.isArray(args) ? Promise.all(args) : Promise.all([...arguments]);
 }
 
 /**
@@ -237,15 +236,15 @@ export function all(args = null) {
  * @param params
  * @returns {*}
  */
-export function formatUrlParams(url,params = {}){
-	Object.keys(params).forEach((key,index) => {
-		if(index == 0){
-			url += "?"+ key + "=" + params[key];
-		}else{
-			url += "&" + key + "=" + params[key];
-		}
-	})
+export function formatUrlParams(url, params = {}) {
+    Object.keys(params).forEach((key, index) => {
+        if (index == 0) {
+            url += `?${key}=${params[key]}`;
+        } else {
+            url += `&${key}=${params[key]}`;
+        }
+    });
 
-	return url;
+    return url;
 }
 
