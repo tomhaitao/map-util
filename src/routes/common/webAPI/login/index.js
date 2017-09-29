@@ -7,6 +7,6 @@ import EnumAPI from 'constants/EnumAPI';
 
 export function login(email, password) {
 
-    const username = email;
-    return T.request.post(EnumAPI.login, { username, password });
+	let username = email;
+	return T.request.post(EnumAPI.login, { username, password });
 }

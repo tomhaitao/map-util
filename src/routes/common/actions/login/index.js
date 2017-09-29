@@ -4,7 +4,7 @@
 
 
 import {
-    login
+	login
 } from '../../webAPI/login';
 
 /**
@@ -15,5 +15,5 @@ import {
  */
 export function doLoginAction(email, password) {
 
-    return login(email, password);
+	return login(email, password);
 }

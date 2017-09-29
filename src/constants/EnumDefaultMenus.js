@@ -59,7 +59,7 @@ export const EnumDefaultMenus = [
                         ]
                     }
                 ]
-            }
+            },
         ]
     },
     {
@@ -76,7 +76,7 @@ export const EnumDefaultMenus = [
                         children: []
                     }
                 ]
-            }
+            },
         ]
     }
 ];

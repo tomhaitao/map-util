@@ -26,7 +26,14 @@ const Routes = () => (
         keyLength={12}
     >
         <Switch>
-            <Route exact path="/" render={() => <Redirect to={EnumRouter.dHub_pluginManage}/>}/>
+            <Route exact path="/" render={() => (
+                false ? (
+                    <Redirect push to={EnumRouter.login} />
+                ) : (
+                    <Redirect to={EnumRouter.dHub_pluginManage} />
+                )
+            )}
+            />
 
             {/* 公共--路由 */}
             {CommonRoutes()}

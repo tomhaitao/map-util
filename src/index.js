@@ -39,7 +39,7 @@ const renderApp = () => render(
 
         </LocaleProvider>
     </Provider>,
-    document.querySelector('#wrapper')
+	document.querySelector('#wrapper')
 );
 
 renderApp();

@@ -2,7 +2,7 @@
  * Created by chencheng on 2017/6/13.
  */
 
-const _rootRoute = ENV.rootPath;
+const _rootRoute = window.ENV.rootPath;
 
 /**
  * 格式化路由
@@ -10,7 +10,7 @@ const _rootRoute = ENV.rootPath;
  * @returns {*}
  * @private
  */
-const _processRoute = route => (_rootRoute + route);
+const _processRoute = (route) => (_rootRoute + route);
 
 /**
  *
@@ -36,7 +36,7 @@ const EnumRouter = {
      | 数据可视化-相关的路由
      |-----------------------------------------------
      */
-    dVisual_bigScreen: _processRoute('dataVisual/bigScreen')
+    dVisual_bigScreen: _processRoute('dataVisual/bigScreen'),
 };
 
 

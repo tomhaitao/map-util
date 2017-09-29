@@ -1,15 +1,14 @@
-import './Login.scss';
-const logo = require('./img/logo2.png');
-const rightLoginImg = require('./img/right_login.png');
-
-import EnumRouter from 'constants/EnumRouter';
 import PropTypes from 'prop-types';
-import T from 'utils/T';
-
 import { Component } from 'react';
 import { Button } from 'antd';
 
+import EnumRouter from 'constants/EnumRouter';
+import './Login.scss';
+import T from 'utils/T';
 import { doLoginAction } from '../../actions/login';
+
+const logo = require('./img/logo2.png');
+const rightLoginImg = require('./img/right_login.png');
 
 export default class Login extends Component {
     static contextTypes = {
@@ -30,7 +29,9 @@ export default class Login extends Component {
 
         };
     }
+    componentDidMount() {
 
+    }
     onEmailChange(e) {
         this.setState({
             email: e.target.value.trim()
@@ -77,10 +78,10 @@ export default class Login extends Component {
                         onChange={this.onEmailChange}
                         placeholder="邮箱"
                         onKeyDown={(e) => {
-                            if (e.keyCode === 13) {
-                                this.onSubmit();
-                            }
-                        }}
+                           if (e.keyCode === 13) {
+                               this.onSubmit();
+                           }
+                       }}
                     />
                     <input
                         type="password"

@@ -12,26 +12,16 @@ module.exports = {
         $: false
     },
     rules: {
-        // 这里填入你的项目需要的个性化配置，比如：
-        //
-        // // @fixable 一个缩进必须用两个空格替代
-        // 'indent': [
-        //     'error',
-        //     2,
-        //     {
-        //         SwitchCase: 1,
-        //         flatTernaryExpressions: true
-        //     }
-        // ],
-        // // @fixable jsx 的 children 缩进必须为两个空格
-        // 'react/jsx-indent': [
-        //     'error',
-        //     2
-        // ],
-        // // @fixable jsx 的 props 缩进必须为两个空格
-        // 'react/jsx-indent-props': [
-        //     'error',
-        //     2
-        // ]
+        'no-tabs': 'off',
+        'no-mixed-spaces-and-tabs': 'off',
+        'no-param-reassign': 'off',
+        'radix': 'off',
+        // 回调函数嵌套禁止超过 3 层，多了请用 async await 替代
+        'max-nested-callbacks': [
+            'error',
+            6
+        ],
+        'indent':'off'
+
     }
 };

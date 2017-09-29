@@ -11,35 +11,35 @@ import enUS from 'antd/lib/locale-provider/en_US';
  * @returns {{locale: string, messages: {}}}
  */
 export function getLocale() {
-    let messages = {},
-        antIntlMsg = {},
-        locale = 'zh',
-        langType = 'zh-CN';
+    let messages = {};
+    let antIntlMsg = {};
+    let locale = 'zh';
+    let langType = 'zh-CN';
 
-    const lang = T.cookies.get('tj_langKey');
+    let lang = T.cookies.get('tj_langKey');
     if (lang) {
-        langType = lang == 'zh' ? 'zh-CN' : 'en';
+        langType = lang === 'zh' ? 'zh-CN' : 'en';
     }
 
     switch (langType) {
         case 'zh-CN':
             messages = require('./lang/zh');
             locale = 'zh';
-            antIntlMsg = null;
+			antIntlMsg = null;
             addLocaleData(require('react-intl/locale-data/zh'));
             break;
 
         case 'en':
             messages = require('./lang/en');
             locale = 'en';
-            antIntlMsg = enUS;
+			antIntlMsg = enUS;
             addLocaleData(require('react-intl/locale-data/en'));
             break;
 
         default:
             messages = require('./lang/en');
             locale = 'en';
-            antIntlMsg = enUS;
+			antIntlMsg = enUS;
             addLocaleData(require('react-intl/locale-data/en'));
     }
 

@@ -44,14 +44,17 @@ const EnumMenus = (() => {
                             UrlToExtraInfoMap[menu.url] = getUrlToExtraInfoMapItem(appMenus.value, menu.url);
                         });
 
-                    } else if (Array.isArray(itemMenu.url)) {
-                        menus.url = menus.url.concat(itemMenu.url);
-                        itemMenu.url.forEach((url) => {
-                            UrlToExtraInfoMap[url] = getUrlToExtraInfoMapItem(appMenus.value, url);
-                        });
                     } else {
-                        menus.url.push(itemMenu.url);
-                        UrlToExtraInfoMap[itemMenu.url] = getUrlToExtraInfoMapItem(appMenus.value, itemMenu.url);
+                        if (Array.isArray(itemMenu.url)) {
+                            menus.url = menus.url.concat(itemMenu.url);
+                            itemMenu.url.forEach((url) => {
+                                UrlToExtraInfoMap[url] = getUrlToExtraInfoMapItem(appMenus.value, url);
+                            });
+                        } else {
+                            menus.url.push(itemMenu.url);
+                            UrlToExtraInfoMap[itemMenu.url] = getUrlToExtraInfoMapItem(appMenus.value, itemMenu.url);
+                        }
+
                     }
                 });
             }
@@ -97,7 +100,7 @@ export const EnumFragmentMenu = [
 export const getMenuCategoryLabel = (category) => {
 
     for (let i = 0; i < EnumMenus.length; i++) {
-        if (category == EnumMenus[i].value) {
+        if (category === EnumMenus[i].value) {
             return EnumMenus[i].label;
         }
     }
@@ -113,7 +116,7 @@ export const getMenuCategory = () => EnumMenus.map((val) => {
     return {
         label,
         value,
-        url: val.childrenMenu[0].url[0]
+		url: val.childrenMenu[0]['url'][0]
     };
 });
 
@@ -123,13 +126,13 @@ export const getMenuCategory = () => EnumMenus.map((val) => {
  * @returns {Array}
  */
 export const getMenusByCategory = (category) => {
-    for (let i = 0; i < EnumMenus.length; i++) {
-        if (category == EnumMenus[i].value) {
-            return EnumMenus[i].childrenMenu;
-        }
-    }
+	for (let i = 0; i < EnumMenus.length; i++) {
+		if (category === EnumMenus[i].value) {
+			return EnumMenus[i].childrenMenu;
+		}
+	}
 
-    return [];
+	return [];
 };
 
 
@@ -139,16 +142,16 @@ export const getMenusByCategory = (category) => {
  * @param type
  * @returns {Array}
  */
-export const getLeftMenu = (url, type = EnumMenus[0].value) => {
+export const getLeftMenu = (url, type = EnumMenus[0]['value']) => {
     const menu = getMenusByCategory(type);
 
-    for (let i = 0; i < menu.length; i++) {
-        if ((T.lodash.isArray(menu[i].url) && T.lodash.indexOf(menu[i].url, url) !== -1) ||
-   (T.lodash.isString(menu[i].url) && menu[i].url == url)
-        ) {
-            return menu[i].children;
-        }
-    }
+	for (let i = 0; i < menu.length; i++) {
+		if ((T.lodash.isArray(menu[i].url) && T.lodash.indexOf(menu[i].url, url) !== -1) ||
+			(T.lodash.isString(menu[i].url) && menu[i].url === url)
+		) {
+			return menu[i].children;
+		}
+	}
 
-    return [];
+	return [];
 };

@@ -1,7 +1,7 @@
 /**
  * Created by chencheng on 17-8-30.
  */
-import Modal from 'antd/lib/modal';
+import  Modal  from 'antd/lib/modal';
 import message from 'antd/lib/message';
 
 class Prompt {
@@ -51,11 +51,13 @@ class Prompt {
         options = Object.assign({
             title: '确定删除吗？',
             // content: <h1>When clicked the OK button, this dialog will be closed after 1 second</h1>,
-            content: '', // content可以是react节点实例
+            content: '',    // content可以是react节点实例
             onOk() {
                 return cbForOk();
             },
-            onCancel() {}
+            onCancel() {
+                return null;
+            },
         }, options);
 
 

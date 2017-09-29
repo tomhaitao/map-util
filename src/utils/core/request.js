@@ -8,39 +8,39 @@ import EnumRouter from '../../constants/EnumRouter';
 Promise._unhandledRejectionFn = function (rejectError) {};
 
 const Singleton = (function () {
-    let instantiated;
+	let instantiated;
 
-    function init() {
+	function init() {
 
-        return axios.create({
-            baseURL: ENV.mock.isStart ? ENV.mock.apiDomain : ENV.apiDomain,
+		return axios.create({
+			baseURL: window.ENV.mock.isStart ? window.ENV.mock.apiDomain : window.ENV.apiDomain,
 
-            // `withCredentials`指示是否跨站点访问控制请求
-            withCredentials: true,
+			// `withCredentials`指示是否跨站点访问控制请求
+			withCredentials: true,
 
-            // “responseType”表示服务器将响应的数据类型
-            // 包括 'arraybuffer', 'blob', 'document', 'json', 'text', 'stream'
-            responseType: 'json',
+			// “responseType”表示服务器将响应的数据类型
+			// 包括 'arraybuffer', 'blob', 'document', 'json', 'text', 'stream'
+			responseType: 'json',
 
-            // headers`是要发送的自定义 headers
-            headers: {
-                // 'X-Requested-With': 'XMLHttpRequest'
-            }
+			// headers`是要发送的自定义 headers
+			headers: {
+				// 'X-Requested-With': 'XMLHttpRequest'
+			},
 
-        });
-    }
+		});
+	}
 
-    return {
-        getInstance() {
+	return {
+		getInstance: function () {
 
-            if (!instantiated) {
-                instantiated = init();
-            }
+			if (!instantiated) {
+				instantiated = init();
+			}
 
-            return instantiated;
-        }
-    };
-}());
+			return instantiated;
+		}
+	};
+})();
 
 
 /**
@@ -50,36 +50,37 @@ const Singleton = (function () {
  * @private
  */
 const _request = (options = {}) => {
-    const successCode = '0';
-    const noLoginCode = 'uupm.user.not.login';
+	const successCode = 0;
+	const noLoginCode = 'uupm.user.not.login';
 
-    return new Promise((resolve, reject) => {
+	return new Promise((resolve, reject) => {
 
-        Singleton.getInstance().request(options).then((resp) => {
+		Singleton.getInstance().request(options).then((resp) => {
 
-            const { data, code, msg } = resp.data;
+			const { data, code, msg } = resp.data;
+			/* eslint prefer-promise-reject-errors:0 */
+			if (successCode === code) {
+				resolve({ code, data, msg });
+			}
+			// 判断是否登录
+			else if (noLoginCode === code) {
+				location.href = EnumRouter.login;
 
-            if (successCode == code) {
-                resolve({ code, data, msg });
-            }
-            // 判断是否登录
-            else if (noLoginCode == code) {
-                location.href = EnumRouter.login;
+			} else {
+				reject({ code, data, msg });
+			}
 
-            } else {
-                reject({ code, data, msg });
-            }
+		}).catch((error) => {
+			reject({
+				code: 'error',
+				data: null,
+				msg: error.message
+			});
+		});
 
-        }).catch((error) => {
-            reject({
-                code: 'error',
-                data: null,
-                msg: error.message
-            });
-        });
-
-    });
+	});
 };
+
 
 
 /**
@@ -93,10 +94,10 @@ export function get(url, params = {}, options = {}) {
     Object.assign(options, {
         url,
         method: 'get',
-        params
+        params: params,
     });
 
-    return _request(options);
+	return _request(options);
 }
 
 /**
@@ -107,8 +108,8 @@ export function get(url, params = {}, options = {}) {
  * @returns {Promise}
  */
 export function post(url, params = {}, options = {}) {
-    const requestParams = new URLSearchParams();
-    for (const [k, v] of Object.entries(params)) {
+    let requestParams = new URLSearchParams();
+    for (let [k, v] of Object.entries(params)) {
         requestParams.append(k, v);
     }
 
@@ -119,9 +120,9 @@ export function post(url, params = {}, options = {}) {
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
         }
-    }, options);
+	}, options);
 
-    return _request(options);
+	return _request(options);
 }
 
 
@@ -134,7 +135,7 @@ export function post(url, params = {}, options = {}) {
  */
 export function postJSON(url, params = {}, options = {}) {
     options = Object.assign({
-        url,
+		url,
         method: 'post',
         data: params,
         headers: {
@@ -142,7 +143,7 @@ export function postJSON(url, params = {}, options = {}) {
         }
     }, options);
 
-    return _request(options);
+	return _request(options);
 }
 
 
@@ -156,19 +157,19 @@ export function postJSON(url, params = {}, options = {}) {
  */
 export function upload(url, params = {}, onUploadProgress = (progressEvent) => {}, options = {}) {
 
-    if (!(params instanceof FormData)) {
-        const formData = new FormData();
-        for (const [k, v] of Object.entries(params)) {
-            formData.append(k, v);
-        }
-        params = formData;
-    }
+	if (!(params instanceof FormData)) {
+		let formData = new FormData();
+		for (let [k, v] of Object.entries(params)) {
+			formData.append(k, v);
+		}
+		params = formData;
+	}
 
     options = Object.assign({
         url,
         method: 'post',
         data: params,
-        onUploadProgress,	// 允许处理上传的进度事件
+        onUploadProgress: onUploadProgress,	// 允许处理上传的进度事件
 
         headers: {
             'Content-Type': 'multipart/form-data'
@@ -176,7 +177,7 @@ export function upload(url, params = {}, onUploadProgress = (progressEvent) => {
     }, options);
 
 
-    return _request(options);
+	return _request(options);
 }
 
 /**
@@ -227,7 +228,7 @@ export function put(url, params = {}, options = {}) {
  */
 export function all(args = null) {
 
-    return Array.isArray(args) ? Promise.all(args) : Promise.all([...arguments]);
+	return Array.isArray(args) ? Promise.all(args) : Promise.all([...arguments]);
 }
 
 /**
@@ -237,14 +238,14 @@ export function all(args = null) {
  * @returns {*}
  */
 export function formatUrlParams(url, params = {}) {
-    Object.keys(params).forEach((key, index) => {
-        if (index == 0) {
-            url += `?${key}=${params[key]}`;
-        } else {
-            url += `&${key}=${params[key]}`;
-        }
-    });
+	Object.keys(params).forEach((key, index) => {
+		if (index === 0) {
+			url += '?' + key + '=' + params[key];
+		} else {
+			url += '&' + key + '=' + params[key];
+		}
+	});
 
-    return url;
+	return url;
 }
 
