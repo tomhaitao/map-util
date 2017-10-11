@@ -1,14 +1,7 @@
 /**
  * Created by chencheng on 17-8-30.
  */
-import EnumRouter from 'constants/EnumRouter';
-import { DefaultLayout, AssembleRoute } from 'routes/routeTool';
-import Login from './routes/login';
+import { AssembleRoute } from 'routes/routeTool';
+import loginRoutes from './Login';
 
-export default AssembleRoute([
-    {
-        Layout: DefaultLayout,
-        path: EnumRouter.login,
-        component: Login,
-    }
-]);
+export default AssembleRoute(loginRoutes);
