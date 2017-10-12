@@ -3,5 +3,7 @@
  */
 import { AssembleRoute } from 'routes/routeTool';
 import loginRoutes from './Login';
+import MapLeaflet from './MapLeaflet';
+import MapCesium from './MapCesium';
 
-export default AssembleRoute(loginRoutes);
+export default AssembleRoute(loginRoutes, MapLeaflet, MapCesium);
