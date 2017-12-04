@@ -1,0 +1,14 @@
+{
+  "tags": {
+    "allowUnknownTags": true
+  },
+  "source": {
+    "include": ["./src/utils", "./src/routes/common/MapLeaflet/components/Map/mapUtil"],
+    "exclude": ["./src/lib/demo"],
+    "includePattern": ".+\\.js$",
+    "excludePattern": "(^|\\/|\\\\)_"
+  },
+  "opts": {
+    "recurse": true
+  }
+}
