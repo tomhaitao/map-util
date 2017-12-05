@@ -34,8 +34,9 @@ export default class Map extends Component {
 
         // 绘制台风到地图
         mapUtil.drawTyphoon(lines);
-        console.log(mapUtil.map)
-        // mapUtil.map.addLayer(mapUtil.createLayer());
+        // console.log(mapUtil.map)
+        mapUtil.createWindyLayer().addTo(mapUtil.map);
+        // mapUtil.createLayer()
     }
 
     render() {
