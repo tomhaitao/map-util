@@ -33,8 +33,9 @@ export default class LeafletUtil {
             zoom: ZOOM.minZoom,
             layers: [L.tileLayer.tileServiceProvider('GaoDe.Normal.Map', ZOOM)],
             zoomControl: false,
-            renderer: L.canvas()
-            // renderer: L.svg()
+            doubleClickZoom: false,
+            // renderer: L.canvas()
+            renderer: L.svg()
         }, options));
 
         this.mouseTool = new MouseTool(this.map, this.L);
@@ -62,6 +63,26 @@ export default class LeafletUtil {
         return wmsTileLayer;
     }
 
+    createLayer() {
+
+        var CanvasLayer = L.GridLayer.extend({
+            createTile: function(coords){
+                // create a <canvas> element for drawing
+                var tile = L.DomUtil.create('canvas', 'leaflet-tile');
+                // setup tile width and height according to the options
+                var size = this.getTileSize();
+                tile.width = size.x;
+                tile.height = size.y;
+                // get a canvas context and draw something on it using coords.x, coords.y and coords.z
+                var ctx = tile.getContext('2d');
+                // return the tile so it can be rendered on screen
+                return tile;
+            }
+        });
+
+        return new CanvasLayer();
+    }
+
     /**
      * 绘制点到地图
      * @param {Array} latlngs [lat, lng]
@@ -80,26 +101,29 @@ export default class LeafletUtil {
 
     /**
      * 绘制折线到地图
-     * @param latlngs
+     * @param latlngs [[lat1, lng1], [lat2, lng2],...]
      * @param options
      * @returns {*}
      */
     drawPolyline(latlngs, options = {}) {
         return L.polyline(latlngs, Object.assign({
-            color: 'red'
+            color: '#FFFF00',
+            weight: 1,
         }, options)).addTo(this.map)
     }
 
     /**
      * 绘制圆点标记到地图
-     * @param latlngs
-     * @param options
+     * @param latlngs [lat, lng]
+     * @param options 配置说明：http://leafletjs.com/reference-1.2.0.html#circlemarker
      * @returns {*}
      */
     drawCircleMarker(latlngs, options = {}) {
         return L.circleMarker(L.latLng(latlngs[0], latlngs[1]), Object.assign({
-            radius: 5,
+            radius: 1,
             color: 'green',
+            fillColor: 'green',
+            fillOpacity: 1
         }, options)).addTo(this.map)
     }
 

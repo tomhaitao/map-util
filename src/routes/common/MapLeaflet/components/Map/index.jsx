@@ -1,5 +1,6 @@
 import './Map.scss';
 import mapUtil from './mapUtil';
+import { lines } from './testData';
 import { Component } from 'react';
 
 export default class Map extends Component {
@@ -21,28 +22,20 @@ export default class Map extends Component {
         // 绘制点到地图中
         mapUtil.drawMarker([31.59, 120.29]);
 
-        //
-        /*for(let i = 0; i < 200; i++){
-            for(let j = 0; j < 100; j++) {
-                // mapUtil.drawMarker([j, 120.29]);
-                mapUtil.drawCircleMarker([j, 122.68]);
-                mapUtil.drawPolyline([
-                    [j, 122.68],
-                    [j +1, 122.43],
-                    [j +2, 118.2]
-                ]);
-            }
-        }*/
 
+        /*mapUtil.map.on('layeradd', (e) => {
+            mapUtil.map.removeLayer(e.layer)
+        })
 
-        mapUtil.drawPolyline([
-            [45.51, 122.68],
-            [37.77, 122.43],
-            [34.04, 118.2]
-        ]);
+        mapUtil.map.on('overlayadd', (e) => {
+            console.log(e)
+            // mapUtil.map.removeLayer(e.layer)
+        })*/
 
-        // 鼠标绘制矩形到地图
-        // mapUtil.mouseTool.rectangle().then((resp) => console.log(resp));
+        // 绘制台风到地图
+        mapUtil.drawTyphoon(lines);
+        console.log(mapUtil.map)
+        // mapUtil.map.addLayer(mapUtil.createLayer());
     }
 
     render() {
