@@ -20,7 +20,7 @@
     }
 
 // -- support for both  0.0.7 and 1.0.0 rc2 leaflet
-    L.CanvasLayer = (L.Layer ? L.Layer : L.Class).extend({
+    L.WindyCanvasLayer = (L.Layer ? L.Layer : L.Class).extend({
         // -- initialized is called on prototype
         initialize: function (options) {
             this._map = null;
@@ -166,7 +166,7 @@
         }
     });
 
-    L.canvasLayer = function () {
-        return new L.CanvasLayer();
+    L.windyCanvasLayer = function () {
+        return new L.WindyCanvasLayer();
     };
 })(L)

@@ -8,7 +8,7 @@ import "./extend/tileServiceProvider";
 
 import MouseTool from './extend/mouseTool';
 
-import "./extend/leafletVelocity"
+import "./extend/windyVelocity";
 
 // 加载mapUtil枚举文件
 import { ZOOM, CENTER } from './constants';

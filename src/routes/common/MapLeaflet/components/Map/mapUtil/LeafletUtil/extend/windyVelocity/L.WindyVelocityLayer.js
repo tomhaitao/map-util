@@ -1,14 +1,8 @@
-import Windy from './windy';
+import Windy from './Windy';
 (function(L, Windy){
-    L.VelocityLayer = (L.Layer ? L.Layer : L.Class).extend({
-
+    L.WindyVelocityLayer = (L.Layer ? L.Layer : L.Class).extend({
         options: {
-            displayValues: true,
-            displayOptions: {
-                velocityType: 'Velocity',
-                position: 'bottomleft',
-                emptyString: 'No velocity data'
-            },
+
             maxVelocity: 10, // used to align color scale
             colorScale: null,
             data: null
@@ -27,7 +21,7 @@ import Windy from './windy';
 
         onAdd: function(map) {
             // create canvas, add overlay control
-            this._canvasLayer = L.canvasLayer().delegate(this);
+            this._canvasLayer = L.windyCanvasLayer().delegate(this);
             this._canvasLayer.addTo(map);
             this._map = map;
         },
@@ -87,7 +81,6 @@ import Windy from './windy';
         },
 
         _initWindy: function(self) {
-
             // windy object, copy options
             const options = Object.assign({ canvas: self._canvasLayer._canvas }, self.options);
             this._windy = new Windy(options);
@@ -107,11 +100,11 @@ import Windy from './windy';
         },
 
         _initMouseHandler: function() {
-            if (!this._mouseControl && this.options.displayValues) {
-                var options = this.options.displayOptions || {};
-                options['leafletVelocity'] = this;
-                this._mouseControl = L.control.velocity(options).addTo(this._map);
-            }
+            // if (!this._mouseControl && this.options.displayValues) {
+            //     var options = this.options.displayOptions || {};
+            //     options['leafletVelocity'] = this;
+            //     this._mouseControl = L.control.velocity(options).addTo(this._map);
+            // }
         },
 
         _clearAndRestart: function(){
@@ -135,7 +128,7 @@ import Windy from './windy';
         }
     });
 
-    L.velocityLayer = function(options) {
-        return new L.VelocityLayer(options);
+    L.windyVelocityLayer = function(options) {
+        return new L.WindyVelocityLayer(options);
     };
 })(L, Windy)

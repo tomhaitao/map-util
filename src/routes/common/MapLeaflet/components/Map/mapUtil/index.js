@@ -1,6 +1,4 @@
 import LeafletUtil from './LeafletUtil';
-import Windy from './Windy';
-import Icon from './LeafletUtil/img/marker.png';
 /**
  *  地图工具类
  */
@@ -19,7 +17,7 @@ class MapUtil extends LeafletUtil{
             "tfxh":"1514"
         }]
      */
-    drawTyphoon(lines, pointCb) {
+    drawTyphoon(lines, pointCb = () => {}) {
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i];
             //
@@ -31,21 +29,21 @@ class MapUtil extends LeafletUtil{
         }
     }
 
-    createWindyLayer(windyData) {
+
+    /**
+     * 添加风资源图层
+     * @param {Object} windyData
+     * @returns {*}
+     */
+    addWindyLayer(windyData) {
         const L = this.L;
 
-        const velocityLayer = L.velocityLayer({
-            displayValues: false,
-            displayOptions: {
-                velocityType: 'Global Wind',
-                displayPosition: 'bottomleft',
-                displayEmptyString: 'No wind data'
-            },
+        const windyVelocityLayer = L.windyVelocityLayer({
             data: windyData,
             maxVelocity: 15,    // 调整风速大小
         });
-        console.log(velocityLayer);
-        return velocityLayer
+
+        return windyVelocityLayer
     }
 }
 

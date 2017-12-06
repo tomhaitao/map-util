@@ -36,9 +36,16 @@ export default class Map extends Component {
         // 绘制台风到地图
         mapUtil.drawTyphoon(lines);
 
-        T.request.get('/asserts/data/windy_10.json').then((resp) => {
-        // T.request.get('/asserts/data/windy_20000.json').then((resp) => {
-            mapUtil.createWindyLayer(resp.data).addTo(mapUtil.map);
+        // 绘制风环形流场
+        T.request.get('/asserts/data/windy_20000.json').then((resp) => {
+            const windy = mapUtil.addWindyLayer(resp.data).addTo(mapUtil.map);
+
+            // 动态设置windy数据
+            setTimeout(() => {
+                T.request.get('/asserts/data/windy_10.json').then((resp) => {
+                    windy.setData(resp.data)
+                })
+            }, 4000)
         })
 
         // mapUtil.createLayer()
