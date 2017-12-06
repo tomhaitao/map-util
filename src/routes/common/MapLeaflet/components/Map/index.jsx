@@ -3,12 +3,15 @@ import T from 'utils/T';
 import mapUtil from './mapUtil';
 import { lines } from './testData';
 import { Component } from 'react';
+import {ZOOM} from "./mapUtil/LeafletUtil/constants";
 
 export default class Map extends Component {
 
     componentDidMount() {
         // 初始化地图
         mapUtil.initMap('mapid');
+
+        const L = mapUtil.L;
 
         // 添加WMS切片到地图中
         // mapUtil.addWMStile('http://10.0.4.235:8080/geoserver/opengeo/wms', {
@@ -22,7 +25,6 @@ export default class Map extends Component {
 
         // 绘制点到地图中
         mapUtil.drawMarker([31.59, 120.29]);
-
 
         /*mapUtil.map.on('layeradd', (e) => {
             mapUtil.map.removeLayer(e.layer)
@@ -46,9 +48,15 @@ export default class Map extends Component {
                     windy.setData(resp.data)
                 })
             }, 4000)
-        })
+        });
 
-        // mapUtil.createLayer()
+        // 添加高德路网图
+        const GaoDeAnnotion = L.tileLayer.tileServiceProvider('GaoDe.Satellite.Annotion', ZOOM);
+        mapUtil.map.addLayer(GaoDeAnnotion);
+
+        // 删除路网图
+        mapUtil.map.removeLayer(GaoDeAnnotion);
+
     }
 
     render() {

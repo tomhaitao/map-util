@@ -3,18 +3,18 @@ import L from 'leaflet';
 
 import IconMarker from './img/marker.png';
 
-// 加载leaflet扩展
+// 加载切片服务配置
 import "./extend/tileServiceProvider";
-
+// 加载鼠标工具
 import MouseTool from './extend/mouseTool';
-
+// 加载风速layer
 import "./extend/windyVelocity";
 
 // 加载mapUtil枚举文件
 import { ZOOM, CENTER } from './constants';
 
 /**
- *  Leaflet 地图工具类
+ * Leaflet 地图工具类
  */
 export default class LeafletUtil {
     constructor() {
@@ -40,6 +40,8 @@ export default class LeafletUtil {
             renderer: L.canvas()
             // renderer: L.svg()
         }, options));
+
+
 
         this.mouseTool = new MouseTool(this.map, this.L);
 

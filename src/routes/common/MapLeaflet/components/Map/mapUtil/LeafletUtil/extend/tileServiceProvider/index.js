@@ -9,7 +9,7 @@
 
     L.TileLayer.TileServiceProvider = L.TileLayer.extend({
 
-        initialize: function(type, options) { // (type, Object)
+        initialize: function(type, options = {}) { // (type, Object)
             let providers = L.TileLayer.TileServiceProvider.providers;
 
             let parts = type.split('.');
@@ -84,7 +84,7 @@
         }
     };
 
-    L.tileLayer.tileServiceProvider = function(type, options) {
+    L.tileLayer.tileServiceProvider = function(type, options = {}) {
         return new L.TileLayer.TileServiceProvider(type, options);
     };
 
