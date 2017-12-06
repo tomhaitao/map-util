@@ -1,4 +1,5 @@
 import './Map.scss';
+import T from 'utils/T';
 import mapUtil from './mapUtil';
 import { lines } from './testData';
 import { Component } from 'react';
@@ -34,8 +35,13 @@ export default class Map extends Component {
 
         // 绘制台风到地图
         mapUtil.drawTyphoon(lines);
-        // console.log(mapUtil.map)
-        mapUtil.createWindyLayer().addTo(mapUtil.map);
+
+        // T.request.get('/asserts/data/windy_10.json').then((resp) => {
+        T.request.get('/asserts/data/windy_20000.json').then((resp) => {
+            // mapUtil.createWindyLayer(resp.data).addTo(mapUtil.map);
+            // mapUtil.createNewWindyLayer(resp.data).addTo(mapUtil.map);
+        })
+
         // mapUtil.createLayer()
     }
 

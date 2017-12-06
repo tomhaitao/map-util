@@ -34,8 +34,8 @@ export default class LeafletUtil {
             layers: [L.tileLayer.tileServiceProvider('GaoDe.Normal.Map', ZOOM)],
             zoomControl: false,
             doubleClickZoom: false,
-            // renderer: L.canvas()
-            renderer: L.svg()
+            renderer: L.canvas()
+            // renderer: L.svg()
         }, options));
 
         this.mouseTool = new MouseTool(this.map, this.L);
