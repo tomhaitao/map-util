@@ -8,6 +8,8 @@ import "./extend/tileServiceProvider";
 
 import MouseTool from './extend/mouseTool';
 
+import "./extend/leafletVelocity"
+
 // 加载mapUtil枚举文件
 import { ZOOM, CENTER } from './constants';
 
@@ -31,7 +33,8 @@ export default class LeafletUtil {
         this.map = L.map(mapId, Object.assign({
             center: CENTER,
             zoom: ZOOM.minZoom,
-            layers: [L.tileLayer.tileServiceProvider('GaoDe.Normal.Map', ZOOM)],
+            // layers: [L.tileLayer.tileServiceProvider('GaoDe.Satellite.Map', ZOOM)],
+            layers: [L.tileLayer.tileServiceProvider('Google.Satellite.Map', ZOOM)],
             zoomControl: false,
             doubleClickZoom: false,
             renderer: L.canvas()
