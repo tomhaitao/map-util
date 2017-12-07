@@ -25,6 +25,12 @@ const server = new WebpackDevServer(webpack(config), {
     // 开启服务器的模块热替换(HMR)
     hot: false,
 
+    watchOptions: {
+        ignored: /node_modules/,
+        aggregateTimeout: 300,
+        poll: 1000
+    },
+
     // 当请求不存在的路由时，直接返回首页
     historyApiFallback: {
         index: '/public/',
