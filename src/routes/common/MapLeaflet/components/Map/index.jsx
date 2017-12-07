@@ -57,6 +57,21 @@ export default class Map extends Component {
         // 删除路网图
         mapUtil.map.removeLayer(GaoDeAnnotion);
 
+        //-----以下是鼠标相关的操作-----
+
+        // 开启测距
+        // mapUtil.mouseTool.measure.start();
+
+        // 清空测距
+        // setTimeout(() => {
+        //     mapUtil.mouseTool.measure.clear();
+        //     console.log('measure clear');
+        // }, 5000)
+
+        // 绘制矩形
+        // mapUtil.mouseTool.rectangle();
+        mapUtil.mouseTool.circle();
+
     }
 
     render() {
