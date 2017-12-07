@@ -9,13 +9,15 @@ export default class Map extends Component {
 
     componentDidMount() {
         // 初始化地图
-        mapUtil.initMap('mapid');
+        mapUtil.initMap('mapid', {
+            crs:mapUtil.L.CRS.EPSG3857
+        });
 
         const L = mapUtil.L;
 
         // 添加WMS切片到地图中
-        // mapUtil.addWMStile('http://10.0.4.235:8080/geoserver/opengeo/wms', {
-        //     layers: 'opengeo:a_2016101306',
+        // mapUtil.addWMStile('http://10.0.4.40:8080/geoserver/opengeo/wms', {
+        //     layers: 'datasci_geo:contour_2016101306',
         //     format: 'image/png',
         //     transparent: true,
         //     version: '1.3.0',

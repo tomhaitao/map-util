@@ -33,7 +33,6 @@ export default class LeafletUtil {
         this.map = L.map(mapId, Object.assign({
             center: CENTER,
             zoom: ZOOM.minZoom,
-            // layers: [L.tileLayer.tileServiceProvider('GaoDe.Satellite.Map', ZOOM)],
             layers: [L.tileLayer.tileServiceProvider('Google.Satellite.Map', ZOOM)],
             zoomControl: false,
             doubleClickZoom: false,
@@ -67,6 +66,29 @@ export default class LeafletUtil {
 
         return wmsTileLayer;
     }
+
+    /**
+     * 依据经纬度获取距离
+     * @param {Array} start 起点坐标 [lat, lng]
+     * @param {Array} end 终点坐标 [lat, lng]
+     * @returns {number} 单位是千米
+     */
+    getDistanceByLatLng (start, end) {
+        const f1 = start[0], l1 = start[1], f2 = end[0], l2 = end[1];
+        const toRadian = Math.PI / 180;
+        const lengthUnit = {
+            decimal: 2,
+            factor: null
+        }
+
+        const R = lengthUnit.factor ? 6371 * lengthUnit.factor : 6371; // kilometres
+        const deltaF = (f2 - f1)*toRadian;
+        const deltaL = (l2 - l1)*toRadian;
+        const a = Math.sin(deltaF/2) * Math.sin(deltaF/2) + Math.cos(f1*toRadian) * Math.cos(f2*toRadian) * Math.sin(deltaL/2) * Math.sin(deltaL/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R * c;
+    }
+
 
     /**
      * 绘制点到地图
