@@ -1,13 +1,50 @@
 import Measure from './Measure';
+import IconMarker from '../../img/marker.png';
+// import fire from 'fir'
+
+const cacheMouseStartEventCb = {
+    marker: {
+        eventName: 'click',
+        eventCb: null,
+    },
+    rectangle: {
+        eventName: 'mousedown',
+        eventCb: null,
+    },
+    circle: {
+        eventName: 'mousedown',
+        eventCb: null,
+    },
+    polyline: {
+        eventName: 'dblclick',
+        eventCb: null,
+    },
+    polygon: {
+        eventName: 'dblclick',
+        eventCb: null,
+    }
+}
+
+/**
+ * 枚举形状类型
+ * @type {{polygon: string, polyline: string}}
+ */
+const EnumShapeType = {
+    polygon: 'polygon',
+    polyline: 'polyline'
+};
+
+/**
+ * 默认鼠标样式
+ * @type {string}
+ */
+let defaultMapMouseCursor = 'move';
 
 const wrapMouse = (L, map, createMark, setMarkBounds, drawEndCb) => {
-    const defaultCursor = map._container.style.cursor || 'move';
     map._container.style.cursor = 'crosshair';
+    map.dragging.disable();
 
     const mousedownCb = (downEvent) => {
-        map.dragging.disable();
-        map.doubleClickZoom.disable();
-
         let markObj =  null;
 
         const mousemoveCb = (moveEvent) => {
@@ -19,12 +56,8 @@ const wrapMouse = (L, map, createMark, setMarkBounds, drawEndCb) => {
         };
 
         const mouseupCb = () => {
-            map.dragging.enable();
-            map.doubleClickZoom.enable();
-            map._container.style.cursor = defaultCursor;
-            map.off('mousemove', mousemoveCb);
-            map.off('mousedown', mousedownCb);
             map.off('mouseup', mouseupCb);
+            map.off('mousemove', mousemoveCb);
             drawEndCb(markObj);
         };
 
@@ -33,64 +66,116 @@ const wrapMouse = (L, map, createMark, setMarkBounds, drawEndCb) => {
     };
 
     map.on('mousedown', mousedownCb);
-}
 
-const wrapMouse1 = (L, map, createMark, setMarkBounds, drawEndCb) => {
-    const defaultCursor = map._container.style.cursor || 'move';
+    return mousedownCb;
+};
+
+const wrapMousePP = (L, map, createMark, setMarkBounds, drawEndCb) => {
     map._container.style.cursor = 'crosshair';
+    let markObj =  null;
+    let cacheMousemoveCb = null;
 
-    const clickCb = (downEvent) => {
-        map.dragging.disable();
-        map.doubleClickZoom.disable();
-
-        let markObj =  null;
+    const clickCb = (clickedEvent) => {
+        markObj =  createMark(markObj, clickedEvent);
 
         const mousemoveCb = (moveEvent) => {
-            if (markObj){
-                setMarkBounds(markObj, downEvent, moveEvent);
-            }else {
-                markObj =  createMark(downEvent, moveEvent);
-            }
+            setMarkBounds(markObj, moveEvent);
         };
 
-        const mouseupCb = () => {
-            map.dragging.enable();
-            map.doubleClickZoom.enable();
-            map._container.style.cursor = defaultCursor;
-            map.off('mousemove', mousemoveCb);
-            map.off('mousedown', clickCb);
-            map.off('mouseup', mouseupCb);
-            drawEndCb(markObj);
-        };
-
+        map.off('mousemove', cacheMousemoveCb);
         map.on('mousemove', mousemoveCb);
-        map.on('mouseup', mouseupCb)
+        cacheMousemoveCb = mousemoveCb;
     };
 
+    const dblClickCb = () => {
+        map.off('mousemove', cacheMousemoveCb);
+        drawEndCb(markObj)
+        markObj = null;
+    }
+
     map.on('click', clickCb);
+    map.on('dblclick', dblClickCb);
+
+    return dblClickCb;
 }
 
 /**
- * 依据经纬度获取距离
- * @param {Array} start 起点坐标 [lat, lng]
- * @param {Array} end 终点坐标 [lat, lng]
- * @returns {number} 单位是千米
+ * 绘制多边形或折线
+ * @param type
+ * @param map
+ * @param L
+ * @param options
+ * @returns {Promise<any>}
  */
-const getDistanceByLatLng = (start, end) => {
-    const f1 = start[0], l1 = start[1], f2 = end[0], l2 = end[1];
-    const toRadian = Math.PI / 180;
-    const lengthUnit = {
-        decimal: 2,
-        factor: null
+const drawPolygonOrpolyline = (type, map, L, options = {}) => new Promise((resolve, reject) => {
+    const createMark = (markObj, clickedEvent) => {
+        if(markObj){
+            let currentLatLngs = markObj.getLatLngs();
+            if (type == EnumShapeType.polygon) {
+                currentLatLngs[0].push(L.latLng(clickedEvent.latlng.lat, clickedEvent.latlng.lng));
+            }else if (type == EnumShapeType.polyline) {
+                currentLatLngs.push(L.latLng(clickedEvent.latlng.lat, clickedEvent.latlng.lng));
+            }
+            markObj.setLatLngs(currentLatLngs);
+
+            return markObj;
+        }
+
+        const shape = {
+            [EnumShapeType.polygon]: L.polygon,
+            [EnumShapeType.polyline]: L.polyline,
+        };
+
+        return shape[type](
+            [[clickedEvent.latlng.lat, clickedEvent.latlng.lng]],
+            Object.assign({
+                color: "#ff7800",
+                weight: 1,
+            }, options)
+        ).addTo(map);
     };
 
-    const R = lengthUnit.factor ? 6371 * lengthUnit.factor : 6371; // kilometres
-    const deltaF = (f2 - f1)*toRadian;
-    const deltaL = (l2 - l1)*toRadian;
-    const a = Math.sin(deltaF/2) * Math.sin(deltaF/2) + Math.cos(f1*toRadian) * Math.cos(f2*toRadian) * Math.sin(deltaL/2) * Math.sin(deltaL/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    return R * c;
-};
+    const setMarkBounds = (markObj,  moveEvent) => {
+        let currentLatLngs = markObj.getLatLngs();
+        if (type == EnumShapeType.polygon) {
+            if (currentLatLngs[0].length < 2) {
+                currentLatLngs[0].push(L.latLng(moveEvent.latlng.lat, moveEvent.latlng.lng));
+            } else {
+                currentLatLngs[0].pop();
+                currentLatLngs[0].push(L.latLng(moveEvent.latlng.lat, moveEvent.latlng.lng));
+            }
+        }else if (type == EnumShapeType.polyline) {
+            if (currentLatLngs.length < 2) {
+                currentLatLngs.push(L.latLng(moveEvent.latlng.lat, moveEvent.latlng.lng));
+            } else {
+                currentLatLngs.pop();
+                currentLatLngs.push(L.latLng(moveEvent.latlng.lat, moveEvent.latlng.lng));
+            }
+        }
+
+        markObj.setLatLngs(currentLatLngs);
+    };
+
+    try {
+        cacheMouseStartEventCb[type].eventCb = wrapMousePP(L, map, createMark, setMarkBounds, (markObj) => {
+            let currentLatLngs = markObj.getLatLngs();
+            if (type == EnumShapeType.polygon) {
+                currentLatLngs[0].pop();
+                currentLatLngs[0].pop();
+            }else if (type == EnumShapeType.polyline) {
+                currentLatLngs.pop();
+                currentLatLngs.pop();
+            }
+
+            markObj.setLatLngs(currentLatLngs);
+
+            resolve(markObj)
+        })
+    }catch (e){
+        reject(e)
+    }
+});
+
 
 export default class MouseTool{
     /**
@@ -98,11 +183,61 @@ export default class MouseTool{
      * @param {Object} map leaflet地图实例
      */
     constructor(map, L) {
+        defaultMapMouseCursor = map._container.style.cursor || 'move';
+
         this.map = map;
         this.L = L;
-
         // 测距工具
         this.measure = new Measure(map, L);
+    }
+
+    /**
+     * 关闭鼠标工具
+     */
+    close() {
+        this.measure.clear();
+        Object.values(cacheMouseStartEventCb).forEach((item) => this.map.off(item.eventName, item.eventCb));
+
+        this.map.dragging.enable();
+        this.map._container.style.cursor = defaultMapMouseCursor;
+    }
+
+    /**
+     * 绘制标记
+     * @param {Object} options 配置说明： http://leafletjs.com/reference-1.2.0.html#marker
+     * @param {Boolean} isFitBounds 是否移动到目标区域
+     * @returns {Promise<any>}
+     */
+    marker(options = {}, isFitBounds = false) {
+        return new Promise((resolve, reject) => {
+            const map = this.map;
+            const L = this.L;
+            map._container.style.cursor = 'crosshair';
+
+            try{
+                const clickCb = (e) => {
+                    const marker = L.marker(
+                        [e.latlng.lat, e.latlng.lng],
+                        Object.assign({
+                            icon: L.icon({
+                                iconUrl: IconMarker,
+                                iconSize: [16, 16],
+                                // iconAnchor: [16, 16],
+                            })
+                        }, options)
+                    ).addTo(map);
+
+                    resolve(marker);
+                    this.close();
+                };
+
+                map.on('click', clickCb);
+                cacheMouseStartEventCb.marker.eventCb = clickCb;
+
+            }catch (e){
+                reject(e)
+            }
+        })
     }
 
     /**
@@ -136,8 +271,9 @@ export default class MouseTool{
             };
 
             try {
-                wrapMouse(L, map, createMark, setMarkBounds, (markObj) => {
+                cacheMouseStartEventCb.rectangle.eventCb = wrapMouse(L, map, createMark, setMarkBounds, (markObj) => {
                     resolve(markObj)
+                    this.close();
                 })
             }catch (e){
                 reject(e)
@@ -147,7 +283,7 @@ export default class MouseTool{
 
     /**
      * 绘制圆形
-     * @param {Object} options 配置说明： http://leafletjs.com/reference-1.2.0.html#rectangle
+     * @param {Object} options 配置说明： http://leafletjs.com/reference-1.2.0.html#circle
      * @param {Boolean} isFitBounds 是否移动到目标区域
      * @returns {Promise<any>}
      */
@@ -158,27 +294,28 @@ export default class MouseTool{
 
             const createMark = (downEvent, moveEvent) => {
                 return L.circle(
-                    [downEvent.latlng.lat, downEvent.latlng.lng ],
+                    [downEvent.latlng.lat, downEvent.latlng.lng],
 
                     Object.assign({
                         color: "#ff7800",
                         weight: 1,
-                        radius: getDistanceByLatLng([downEvent.latlng.lat, downEvent.latlng.lng ],[moveEvent.latlng.lat, moveEvent.latlng.lng])
+                        radius: map.distance([downEvent.latlng.lat, downEvent.latlng.lng ],[moveEvent.latlng.lat, moveEvent.latlng.lng])
                     }, options)
 
                 ).addTo(map);
             };
 
             const setMarkBounds = (circleObj, downEvent, moveEvent) => {
-                circleObj.setRadius(getDistanceByLatLng(
-                    [downEvent.latlng.lat, downEvent.latlng.lng ],
+                circleObj.setRadius(map.distance(
+                    [downEvent.latlng.lat, downEvent.latlng.lng],
                     [moveEvent.latlng.lat, moveEvent.latlng.lng]
-                ) * 1000);
+                ));
             };
 
             try {
-                wrapMouse(L, map, createMark, setMarkBounds, (markObj) => {
+                cacheMouseStartEventCb.circle.eventCb = wrapMouse(L, map, createMark, setMarkBounds, (markObj) => {
                     resolve(markObj)
+                    this.close();
                 })
             }catch (e){
                 reject(e)
@@ -186,41 +323,29 @@ export default class MouseTool{
         });
     }
 
+    /**
+     * 绘制多边形
+     * @param {Object} options 配置说明： http://leafletjs.com/reference-1.2.0.html#polygon
+     * @param {Boolean} isFitBounds
+     * @returns {Promise<any>}
+     */
     polygon(options = {}, isFitBounds = false){
-        return new Promise((resolve, reject) => {
-            const map = this.map;
-            const L = this.L;
+        return drawPolygonOrpolyline(EnumShapeType.polygon,this.map, this.L, options).then(resp => {
+            this.close();
+            return resp;
+        }, (e) => e)
+    }
 
-            const createMark = (downEvent, moveEvent) => {
-                var latlngs = [[37, -109.05],[41, -109.03],[41, -102.05],[37, -102.04]];
-                var polygon = L.polygon(latlngs, {color: 'red'}).addTo(map);
-
-                return L.circle(
-                    [downEvent.latlng.lat, downEvent.latlng.lng ],
-
-                    Object.assign({
-                        color: "#ff7800",
-                        weight: 1,
-                        radius: getDistanceByLatLng([downEvent.latlng.lat, downEvent.latlng.lng ],[moveEvent.latlng.lat, moveEvent.latlng.lng])
-                    }, options)
-
-                ).addTo(map);
-            };
-
-            const setMarkBounds = (rectangleObj, downEvent, moveEvent) => {
-                rectangleObj.setRadius(getDistanceByLatLng(
-                    [downEvent.latlng.lat, downEvent.latlng.lng ],
-                    [moveEvent.latlng.lat, moveEvent.latlng.lng]
-                ) * 1000);
-            };
-
-            try {
-                wrapMouse(L, map, createMark, setMarkBounds, (markObj) => {
-                    resolve(markObj)
-                })
-            }catch (e){
-                reject(e)
-            }
-        });
+    /**
+     * 绘制折线
+     * @param {object} options   配置说明： http://leafletjs.com/reference-1.2.0.html#polyline
+     * @param {Boolean} isFitBounds
+     * @returns {Promise<any>}
+     */
+    polyline(options = {}, isFitBounds = false){
+        return drawPolygonOrpolyline(EnumShapeType.polyline,this.map, this.L, options).then(resp => {
+            this.close();
+            return resp;
+        }, (e) => e)
     }
 }

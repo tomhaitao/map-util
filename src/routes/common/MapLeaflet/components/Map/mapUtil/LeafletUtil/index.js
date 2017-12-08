@@ -84,22 +84,10 @@ export default class LeafletUtil {
      * 依据经纬度获取距离
      * @param {Array} start 起点坐标 [lat, lng]
      * @param {Array} end 终点坐标 [lat, lng]
-     * @returns {number} 单位是千米
+     * @returns {number} 单位是: "米"
      */
     getDistanceByLatLng (start, end) {
-        const f1 = start[0], l1 = start[1], f2 = end[0], l2 = end[1];
-        const toRadian = Math.PI / 180;
-        const lengthUnit = {
-            decimal: 2,
-            factor: null
-        }
-
-        const R = lengthUnit.factor ? 6371 * lengthUnit.factor : 6371; // kilometres
-        const deltaF = (f2 - f1)*toRadian;
-        const deltaL = (l2 - l1)*toRadian;
-        const a = Math.sin(deltaF/2) * Math.sin(deltaF/2) + Math.cos(f1*toRadian) * Math.cos(f2*toRadian) * Math.sin(deltaL/2) * Math.sin(deltaL/2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        return R * c;
+        return this.map.distance(start,end);
     }
 
 
@@ -114,7 +102,7 @@ export default class LeafletUtil {
             icon: L.icon({
                 iconUrl: IconMarker,
                 iconSize: [16, 16],
-                iconAnchor: [16, 16],
+                // iconAnchor: [16, 16],
             })
         }, options)).addTo(this.map);
     }

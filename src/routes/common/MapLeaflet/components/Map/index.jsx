@@ -70,9 +70,17 @@ export default class Map extends Component {
         //     console.log('measure clear');
         // }, 5000)
 
-        // 绘制矩形
+
         // mapUtil.mouseTool.rectangle();
-        mapUtil.mouseTool.circle();
+        // mapUtil.mouseTool.circle();
+        // mapUtil.mouseTool.polygon().then(resp => console.log(resp));
+        // mapUtil.mouseTool.polyline().then(resp => console.log(resp));
+        // mapUtil.mouseTool.marker().then(resp => console.log(resp));
+
+        // 关闭鼠标
+        // setTimeout(() => {
+        //     mapUtil.mouseTool.close();
+        // }, 2000)
 
     }
 
