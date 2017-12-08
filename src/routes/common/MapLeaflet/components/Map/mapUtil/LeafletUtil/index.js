@@ -40,11 +40,24 @@ export default class LeafletUtil {
             // renderer: L.svg()
         }, options));
 
-
-
         this.mouseTool = new MouseTool(this.map, this.L);
-
         return this.map;
+    }
+
+    /**
+     * 清空地图
+     * @param {Array} keepLayers 需要保留的layer [layerIns]
+     */
+    clearMap(keepLayers = []) {
+        this.mouseTool.measure.clear();
+
+        setTimeout(() => {
+            this.map.eachLayer((layer) => {
+                if (keepLayers.indexOf(layer) === -1) {
+                    layer.remove();
+                }
+            })
+        }, 0)
     }
 
     /**

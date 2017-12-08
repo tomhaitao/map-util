@@ -70,6 +70,7 @@ export default class Measure{
             this._map.doubleClickZoom.enable();
             L.DomEvent.off(this._map._container, 'keydown', this._escape, this);
             L.DomEvent.off(this._map._container, 'dblclick', this._closePath, this);
+            if (!this._allLayers) return false;
             this._map.removeLayer(this._allLayers);
             this._allLayers = L.layerGroup();
             this._map._container.style.cursor = this._defaultCursor;
