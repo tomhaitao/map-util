@@ -45,6 +45,29 @@ class MapUtil extends LeafletUtil{
 
         return windyVelocityLayer
     }
+
+
+    /**
+     * 依据坐标和dom的宽高，计算position的left和top
+     * @param {Object} map
+     * @param {Array} coordinate [lat,lng]
+     * @param {String} domId
+     * @returns {{left: number, top: number}}
+     */
+    getPositionByCoordinate(map,coordinate,domId){
+        const L = this.L;
+
+        const mapWidth = map.getSize().x,
+            mapHeight = map.getSize().y,
+            boxWidth = $('#'+domId).width(),
+            boxHeight = $('#'+domId).height(),
+            coord = this.map.latLngToContainerPoint(L.latLng(coordinate[0], coordinate[1]));
+
+        const left = coord.x + boxWidth > mapWidth ? coord.x - boxWidth - 50 : coord.x + 50;
+        const top = coord.y - boxHeight/2 > mapHeight ? coord.y + boxHeight/2 : coord.y - boxHeight/2;
+
+        return { left, top }
+    }
 }
 
 export default new MapUtil();
