@@ -108,6 +108,34 @@ export default class LeafletUtil {
     }
 
     /**
+     * 绘制矩形到地图
+     * @param {Array} bounds [[lat, lng], [lat, lng]]
+     * @param options
+     */
+    drawRectangle(bounds, options = {}) {
+        return L.rectangle(bounds, Object.assign({color: "#ff7800", weight: 1}, options)).addTo(this.map);
+    }
+
+    /**
+     * 绘制矩形到地图
+     * @param {Array} latlngs [[lat, lng], [lat, lng]]
+     * @param options
+     */
+    drawPolygon(latlngs, options = {}) {
+        return L.polygon(latlngs, Object.assign({color: "#ff7800", weight: 1}, options)).addTo(this.map);
+    }
+
+    /**
+     * 绘制圆形到地图
+     * @param {Array} latlngs [lat, lng]
+     * @param {Number} radius
+     * @param options
+     */
+    drawCirCle(latlngs, radius, options = {}) {
+        return L.circle(latlngs, {radius, color: "#ff7800", weight: 1}).addTo(this.map);
+    }
+
+    /**
      * 绘制折线到地图
      * @param latlngs [[lat1, lng1], [lat2, lng2],...]
      * @param options

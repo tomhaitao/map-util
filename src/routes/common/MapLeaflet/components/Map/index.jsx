@@ -71,8 +71,8 @@ export default class Map extends Component {
         // }, 5000)
 
 
-        // mapUtil.mouseTool.rectangle();
-        // mapUtil.mouseTool.circle();
+        // mapUtil.mouseTool.rectangle().then(resp => console.log(resp));
+        mapUtil.mouseTool.circle().then(resp => console.log(resp));
         // mapUtil.mouseTool.polygon().then(resp => console.log(resp));
         // mapUtil.mouseTool.polyline().then(resp => console.log(resp));
         // mapUtil.mouseTool.marker().then(resp => console.log(resp));
