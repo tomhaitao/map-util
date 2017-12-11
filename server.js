@@ -17,6 +17,8 @@ config.entry.app.push(`webpack-dev-server/client?http://${host}:${port}/`);
 const server = new WebpackDevServer(webpack(config), {
     publicPath: config.output.publicPath,
 
+    progress: true,
+
     // 指定服务器内容指定目录
     contentBase: config.output.path,
 
