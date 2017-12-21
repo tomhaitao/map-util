@@ -107,7 +107,7 @@ const wrapMousePP = (L, map, createMark, setMarkBounds, drawEndCb) => {
  * @param options
  * @returns {Promise<any>}
  */
-const drawPolygonOrpolyline = (type, map, L, options = {}) => new Promise((resolve, reject) => {
+const drawPolygonOrPolyline = (type, map, L, options = {}) => new Promise((resolve, reject) => {
     const createMark = (markObj, clickedEvent) => {
         if(markObj){
             let currentLatLngs = markObj.getLatLngs();
@@ -192,11 +192,19 @@ export default class MouseTool{
     }
 
     /**
+     * 清除事件
+     * @private
+     */
+    _clearEvent(){
+        Object.values(cacheMouseStartEventCb).forEach((item) => this.map.off(item.eventName, item.eventCb));
+    }
+
+    /**
      * 关闭鼠标工具
      */
     close() {
         this.measure.clear();
-        Object.values(cacheMouseStartEventCb).forEach((item) => this.map.off(item.eventName, item.eventCb));
+        this._clearEvent();
 
         this.map.dragging.enable();
         this.map._container.style.cursor = defaultMapMouseCursor;
@@ -209,6 +217,7 @@ export default class MouseTool{
      * @returns {Promise<any>}
      */
     marker(options = {}, isFitBounds = false) {
+        this._clearEvent();
         return new Promise((resolve, reject) => {
             const map = this.map;
             const L = this.L;
@@ -247,6 +256,7 @@ export default class MouseTool{
      * @returns {Promise<any>}
      */
     rectangle(options = {}, isFitBounds = false){
+        this._clearEvent();
         return new Promise((resolve, reject) => {
             const map = this.map;
             const L = this.L;
@@ -288,6 +298,7 @@ export default class MouseTool{
      * @returns {Promise<any>}
      */
     circle(options = {}, isFitBounds = false){
+        this._clearEvent();
         return new Promise((resolve, reject) => {
             const map = this.map;
             const L = this.L;
@@ -330,7 +341,8 @@ export default class MouseTool{
      * @returns {Promise<any>}
      */
     polygon(options = {}, isFitBounds = false){
-        return drawPolygonOrpolyline(EnumShapeType.polygon,this.map, this.L, options).then(resp => {
+        this._clearEvent();
+        return drawPolygonOrPolyline(EnumShapeType.polygon,this.map, this.L, options).then(resp => {
             this.close();
             return resp;
         }, (e) => e)
@@ -343,7 +355,8 @@ export default class MouseTool{
      * @returns {Promise<any>}
      */
     polyline(options = {}, isFitBounds = false){
-        return drawPolygonOrpolyline(EnumShapeType.polyline,this.map, this.L, options).then(resp => {
+        this._clearEvent();
+        return drawPolygonOrPolyline(EnumShapeType.polyline,this.map, this.L, options).then(resp => {
             this.close();
             return resp;
         }, (e) => e)
