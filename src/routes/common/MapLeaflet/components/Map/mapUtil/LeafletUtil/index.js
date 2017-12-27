@@ -14,6 +14,21 @@ import "./extend/windyVelocity";
 import { ZOOM, CENTER } from './constants';
 
 /**
+ * 记录清除地图回调函数
+ * @type {Map<any, any>}
+ */
+let cacheClearCallBack = new Map();
+
+/**
+ * 触发清除地图回调
+ */
+const triggerClearMapCb = () => {
+	for(let [cb, {params, context}] of cacheClearCallBack.entries()) {
+		cb.apply(context, params);
+	}
+}
+
+/**
  * Leaflet 地图工具类
  */
 export default class LeafletUtil {
@@ -44,6 +59,26 @@ export default class LeafletUtil {
         return this.map;
     }
 
+	/**
+	 * 绑定清除地图的回调
+	 * @param {Function} cb 回调方法
+	 * @param {Array} params 回调参数
+	 * @param {Object} context 上下文
+	 */
+	onClearMap(cb = () => {}, params = [], context = null) {
+		cacheClearCallBack.set(cb, { params: Array.isArray(params) ? params : [params], context });
+	}
+
+	/**
+	 * 解除清除地图的回调
+	 * @param cb
+	 */
+	offClearMap(cb){
+		if (cacheClearCallBack.has(cb)) {
+			cacheClearCallBack.delete(cb);
+		}
+	}
+
     /**
      * 清空地图
      * @param {Array} keepLayers 需要保留的layer [layerIns]
@@ -56,7 +91,9 @@ export default class LeafletUtil {
                 if (keepLayers.indexOf(layer) === -1) {
                     layer.remove();
                 }
-            })
+            });
+
+            triggerClearMapCb();
         }, 0)
     }
 
