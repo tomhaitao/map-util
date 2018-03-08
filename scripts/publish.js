@@ -7,7 +7,6 @@ let conf = {
     entryFileName:'./publish-index.html',               //入口文件名称
     appName:'platform',                                 //项目名称
 	proxyPath:process.argv[3] ? process.argv[3] : '/',  //代理的前缀 注意：后面必须带斜线
-    workerSensePath:'./web_modules/tj-sense/worker/worker-sense.js',
     webPath:process.argv[2],    //web目录
 
 };
@@ -27,9 +26,6 @@ String.prototype.rtrimSlash = function () {
 	return this.replace(/^\//g, '');
 };
 
-
-const exec = require('child_process').exec;
-const path = require('path');
 const fs = require("fs");
 const clc = require('cli-color');
 
@@ -50,7 +46,6 @@ function handleError(errorMsg){
 
     //2.删除入口文件
     fs.unlinkSync(conf.entryFileName);
-
 
     console.log(clc.yellow('错误:'));
     console.log(clc.red(errorMsg));
@@ -133,7 +128,7 @@ function doCompilerPlatform() {
             handleWarn(jsonStats.warnings);
         }
 
-        let stepCount = 2;
+        let stepCount = 1;
 
         function isDone(){
             stepCount--;
@@ -144,9 +139,6 @@ function doCompilerPlatform() {
         }
 
         //1. copy worker-sense.js文件到编译目录下
-        Tool.copyFileToDir(conf.workerSensePath,webpackConf.output.path,'worker-sense.js',function () {
-            isDone();
-        });
 
         //2. 将编译后的项目移动到发布目录
 
