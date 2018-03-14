@@ -9,6 +9,9 @@ import "./extend/tileServiceProvider";
 import MouseTool from './extend/mouseTool';
 // 加载风速layer
 import "./extend/windyVelocity";
+// 加载移动Marker
+import "./extend/movingMarker";
+
 
 // 加载mapUtil枚举文件
 import { ZOOM, CENTER } from './constants';
