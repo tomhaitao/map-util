@@ -87,11 +87,11 @@ export default class Map extends Component {
         setTimeout( function()
         {
             camera.flyTo( {
-                destination : Cesium.Cartesian3.fromDegrees( 116, 39.9, 6000000 ),
-                orientation : {
-                    heading : Cesium.Math.toRadians( -15 ),
-                    pitch : Cesium.Math.toRadians( -65 ),
-                    roll : Cesium.Math.toRadians( 0 )
+                destination : Cesium.Cartesian3.fromDegrees( 116, 39.9, 6000000 ),  // 相机目标位置
+                orientation : { // 相机镜头对准的方法
+                    heading : Cesium.Math.toRadians( -15 ), // 代表镜头左右方向,正值为右,负值为左,360度和0度是一样的
+                    pitch : Cesium.Math.toRadians( -65 ),   // 代表镜头上下方向,正值为上,负值为下.
+                    roll : Cesium.Math.toRadians( 0 )       // 代表镜头左右倾斜.正值,向右倾斜,负值向左倾斜
                 },
                 duration : 3,//动画持续时间
                 complete : function()//飞行完毕后执行的动作
