@@ -11,7 +11,6 @@ import { IntlProvider, injectIntl } from 'react-intl';
 // 加载基础样式
 import 'antd/lib/message/style';
 import 'antd/lib/modal/style';
-import './base.scss';
 
 // 加载 redux store
 import store from './store';

@@ -12,7 +12,9 @@ import {
 
 import { NoMatch } from './routeTool';
 
-import CommonRoutes from './common';                    // 公共模块--相关路由,如:登录,注册...
+import EntryRoutes from './entry';
+import CesiumRoutes from './cesium';
+import LeafletRoutes from './leaflet';
 
 /**
  * 路由配置
@@ -24,14 +26,16 @@ const Routes = () => (
         keyLength={12}
     >
         <Switch>
-            <Route exact path="/" render={() => <Redirect push to={EnumRouter.login} />} />
+            <Route exact path="/" render={() => <Redirect push to={EnumRouter.entry} />} />
 
-            {/* 公共--路由 */}
-            {CommonRoutes()}
+            {EntryRoutes()}
+
+            {CesiumRoutes()}
+
+            {LeafletRoutes()}
 
             {/* 404 NOT found */}
             <Route component={NoMatch} />
-
         </Switch>
 
     </BrowserRouter>

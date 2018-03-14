@@ -4,6 +4,7 @@
  * @license www.tianjishuju.com/license
  */
 import L from 'leaflet';
+
 // 定位点图标
 import markerImage from 'resources/img/map/marker.png';
 

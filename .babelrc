@@ -26,7 +26,8 @@
                         "messagesDir": "./i18n-messages",
                         "enforceDescriptions": false
                     }
-                ]
+                ],
+                "transform-decorators-legacy"
             ]
         }
     }

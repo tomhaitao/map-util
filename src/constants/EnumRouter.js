@@ -14,12 +14,12 @@ const _processRoute = (route) => (_rootRoute + route);
 
 /**
  *
- * @type {{rootRoute: string, login: *, cesiumMap: *, leafletMap: *}}
+ * @type {{rootRoute: string, entry: *, cesiumMap: *, leafletMap: *}}
  */
 const EnumRouter = {
-    rootRoute: _rootRoute,		// 根路由
+    rootRoute: _rootRoute,		                // 根路由
 
-    login: _processRoute('login'),		// 登陆
+    entry: _processRoute('entry'),              // 入口
 
     cesiumMap: _processRoute('cesiumMap'),		// cesiumMap
 
