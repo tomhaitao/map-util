@@ -50,8 +50,8 @@ export default class Map extends Component {
             } );
         }, 1000 );
 
-        // this.fly1(Cesium, viewer);
-        this.fly2(Cesium, viewer);
+        this.fly1(Cesium, viewer);
+        // this.fly2(Cesium, viewer);
         // this.fly3(Cesium, viewer);
 
 
@@ -69,18 +69,21 @@ export default class Map extends Component {
         let startLat = 39.904194;
         viewer.clock.clockRange = Cesium.ClockRange.LOOP_STOP;
         let startTime = viewer.clock.startTime;
-        let midTime = Cesium.JulianDate.addSeconds(startTime, 43200, new Cesium.JulianDate());
-        let stopTime = Cesium.JulianDate.addSeconds(startTime, 86400, new Cesium.JulianDate());
+        console.log(viewer.clock)
+        let midTime = Cesium.JulianDate.addSeconds(startTime, 4300, new Cesium.JulianDate());
+        let stopTime = Cesium.JulianDate.addSeconds(startTime, 8600, new Cesium.JulianDate());
 
         for (let i = 0; i < numberOfArcs; ++i) {
             let color = Cesium.Color.fromRandom({
                 alpha : 1.0
             });
-            let stopLon = Cesium.Math.nextRandomNumber() * 358 - 179;
-            let stopLat = Cesium.Math.nextRandomNumber() * 178 - 89;
+            let stopLon = 16.314295;
+            let stopLat = 39.904194;
             let property = new Cesium.SampledPositionProperty();
+
             let startPosition = Cesium.Cartesian3.fromDegrees(startLon, startLat, 0);
             property.addSample(startTime, startPosition);
+
             let stopPosition = Cesium.Cartesian3.fromDegrees(stopLon, stopLat, 0);
             property.addSample(stopTime, stopPosition);
 
@@ -94,13 +97,25 @@ export default class Map extends Component {
             property.addSample(stopTime, stopPosition);
 
             let arcEntity = viewer.entities.add({
-                position : property,
-                point : {
-                    pixelSize : 8,
-                    color : Cesium.Color.TRANSPARENT,
-                    outlineColor : color,
-                    outlineWidth : 3
+                //Set the entity availability to the same interval as the simulation time.
+                availability : new Cesium.TimeIntervalCollection([new Cesium.TimeInterval({
+                    start : startTime,
+                    stop : stopTime
+                })]),
+                //Load the Cesium plane model to represent the entity
+                model : {
+                    uri : '/asserts/Cesium_Air.gltf',
+                    minimumPixelSize : 64
                 },
+                orientation : new Cesium.VelocityOrientationProperty(property),
+
+                position : property,
+                // point : {
+                //     pixelSize : 8,
+                //     color : Cesium.Color.TRANSPARENT,
+                //     outlineColor : color,
+                //     outlineWidth : 3
+                // },
                 path : {
                     resolution : 1200,
                     material : new Cesium.PolylineGlowMaterialProperty({
@@ -112,10 +127,10 @@ export default class Map extends Component {
                     trailTime: 1e10
                 }
             });
-            arcEntity.position.setInterpolationOptions({
-                interpolationDegree : 5,
-                interpolationAlgorithm : Cesium.LagrangePolynomialApproximation
-            });
+            // arcEntity.position.setInterpolationOptions({
+            //     interpolationDegree : 5,
+            //     interpolationAlgorithm : Cesium.LagrangePolynomialApproximation
+            // });
         }
 
     }
