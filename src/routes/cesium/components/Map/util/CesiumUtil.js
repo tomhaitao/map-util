@@ -32,7 +32,7 @@ export default class CesiumUtil{
      * @return {*}
      */
     initViewer(containerId, options = {}){
-        return new Cesium.Viewer(containerId, Object.assign({
+        const viewer = new Cesium.Viewer(containerId, Object.assign({
             animation : true,//是否创建动画小器件，左下角仪表
             timeline : false,//是否显示时间轴
             baseLayerPicker : false,//是否显示图层选择器
@@ -40,10 +40,10 @@ export default class CesiumUtil{
             geocoder : false,//是否显示geocoder小器件，右上角查询按钮
             homeButton : false,//是否显示Home按钮
             infoBox : false,//是否显示信息框
-            sceneModePicker : false,//是否显示3D/2D选择器
+            sceneModePicker : true,//是否显示3D/2D选择器
             selectionIndicator : false,//是否显示选取指示器组件
             navigationHelpButton : false,//是否显示右上角的帮助按钮
-            scene3DOnly : true,//如果设置为true，则所有几何图形以3D模式绘制以节约GPU资源
+            scene3DOnly : false,//如果设置为true，则所有几何图形以3D模式绘制以节约GPU资源
             clock : new Cesium.Clock(),//用于控制当前时间的时钟对象
             selectedImageryProviderViewModel : undefined,//当前图像图层的显示模型，仅baseLayerPicker设为true有意义
             imageryProviderViewModels : Cesium.createDefaultImageryProviderViewModels(),//可供BaseLayerPicker选择的图像图层ProviderViewModel数组
@@ -71,6 +71,15 @@ export default class CesiumUtil{
             dataSources : new Cesium.DataSourceCollection()
             //需要进行可视化的数据源的集合
         }, options));
+
+
+        /**
+         * 掉entity的双击事件
+         * 问题所在：双击entity，会放大视图，entity居中显示，且鼠标左键失去移动功能，鼠标滚轮失去作用
+         */
+        viewer.screenSpaceEventHandler.setInputAction(function(){},Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK );
+
+        return viewer;
     }
 
     /**

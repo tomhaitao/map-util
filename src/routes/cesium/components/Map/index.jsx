@@ -50,219 +50,105 @@ export default class Map extends Component {
             } );
         }, 1000 );
 
-        this.fly1(Cesium, viewer);
-        // this.fly2(Cesium, viewer);
-        // this.fly3(Cesium, viewer);
-
-
-
+        this.fly(Cesium, viewer);
     }
 
-    /**
-     * 飞行轨迹
-     */
-    fly1(Cesium, viewer){
+    fly(Cesium, viewer) {
+        // viewer.clock.clockRange = Cesium.ClockRange.LOOP_STOP;
 
-        viewer.scene.globe.baseColor = new Cesium.Color(8 / 255.0, 24 / 255.0, 52 / 255.0, 1.0);
-        let numberOfArcs = 1;
-        let startLon = 116.314295;
-        let startLat = 39.904194;
-        viewer.clock.clockRange = Cesium.ClockRange.LOOP_STOP;
-        let startTime = viewer.clock.startTime;
-        console.log(viewer.clock)
-        let midTime = Cesium.JulianDate.addSeconds(startTime, 4300, new Cesium.JulianDate());
-        let stopTime = Cesium.JulianDate.addSeconds(startTime, 8600, new Cesium.JulianDate());
+        // 模拟飞行数据
+        const simulateFlyData = () => {
+            const startLon = 116.314295;
+            const startLat = 39.904194;
 
-        for (let i = 0; i < numberOfArcs; ++i) {
-            let color = Cesium.Color.fromRandom({
-                alpha : 1.0
-            });
-            let stopLon = 16.314295;
-            let stopLat = 39.904194;
-            let property = new Cesium.SampledPositionProperty();
+            let data = [];
+            let count = 10;
+            for(let i = 0; i < count; i++){
+                data.push({
+                    lon: startLon - i * 10,
+                    lat: startLat,
+                    height: i == 0 || i == count -1 ? 0 : Cesium.Math.nextRandomNumber() * 500000 + 800000 * 2,
+                    time: i == 0 ? 0 : i * 10,
+                })
+            }
 
-            let startPosition = Cesium.Cartesian3.fromDegrees(startLon, startLat, 0);
-            property.addSample(startTime, startPosition);
-
-            let stopPosition = Cesium.Cartesian3.fromDegrees(stopLon, stopLat, 0);
-            property.addSample(stopTime, stopPosition);
-
-            let midPoint = Cesium.Cartographic.fromCartesian(property.getValue(midTime));
-            midPoint.height = Cesium.Math.nextRandomNumber() * 500000 + 800000 * 2;
-            let midPosition = viewer.scene.globe.ellipsoid.cartographicToCartesian(midPoint, new Cesium.Cartesian3());
-
-            property = new Cesium.SampledPositionProperty();
-            property.addSample(startTime, startPosition);
-            property.addSample(midTime, midPosition);
-            property.addSample(stopTime, stopPosition);
-
-            let arcEntity = viewer.entities.add({
-                //Set the entity availability to the same interval as the simulation time.
-                availability : new Cesium.TimeIntervalCollection([new Cesium.TimeInterval({
-                    start : startTime,
-                    stop : stopTime
-                })]),
-                //Load the Cesium plane model to represent the entity
-                model : {
-                    uri : '/asserts/Cesium_Air.gltf',
-                    minimumPixelSize : 64
-                },
-                orientation : new Cesium.VelocityOrientationProperty(property),
-
-                position : property,
-                // point : {
-                //     pixelSize : 8,
-                //     color : Cesium.Color.TRANSPARENT,
-                //     outlineColor : color,
-                //     outlineWidth : 3
-                // },
-                path : {
-                    resolution : 1200,
-                    material : new Cesium.PolylineGlowMaterialProperty({
-                        glowPower : 0.16,
-                        color : color
-                    }),
-                    width : 5,
-                    leadTime: 1e10,
-                    trailTime: 1e10
-                }
-            });
-            // arcEntity.position.setInterpolationOptions({
-            //     interpolationDegree : 5,
-            //     interpolationAlgorithm : Cesium.LagrangePolynomialApproximation
-            // });
+            return data;
         }
 
-    }
+        const startTime = Cesium.JulianDate.fromDate(new Date(2015, 2, 25, 16));
 
+        // 创建飞行路径
+        const createFlightPath = () => {
+            let property = new Cesium.SampledPositionProperty();
+            const data = simulateFlyData();
 
-    fly2(Cesium, viewer){
-        //Enable lighting based on sun/moon positions
-        viewer.scene.globe.enableLighting = true;
+            for (let i = 0; i < data.length; ++i) {
+                const { lon, lat, height, time } = data[i];
 
-        //Enable depth testing so things behind the terrain disappear.
-        viewer.scene.globe.depthTestAgainstTerrain = true;
+                // let position = viewer.scene.globe.ellipsoid.cartographicToCartesian(new Cesium.Cartographic(lon, lat, height));
+                let position = Cesium.Cartesian3.fromDegrees(lon, lat, height);
+                if (i == 0) console.log("start",position)
+                property.addSample(
+                    Cesium.JulianDate.addSeconds(startTime, time, new Cesium.JulianDate()),
+                    position
+                );
+            }
 
-        //Set the random number seed for consistent results.
-        Cesium.Math.setRandomNumberSeed(3);
+            return {
+                property,
+                // startTime: Cesium.JulianDate.addSeconds(startTime, data[0].time, new Cesium.JulianDate()),
+                startTime,
+                stopTime: Cesium.JulianDate.addSeconds(startTime, data[data.length -1].time, new Cesium.JulianDate()),
+            }
+        };
 
-        //Set bounds of our simulation time
-        var start = Cesium.JulianDate.fromDate(new Date(2015, 2, 25, 16));
-        var stop = Cesium.JulianDate.addSeconds(start, 360, new Cesium.JulianDate());
+        const { property, stopTime } = createFlightPath();
 
-        //Make sure viewer is at the desired time.
-        viewer.clock.startTime = start.clone();
-        viewer.clock.stopTime = stop.clone();
-        viewer.clock.currentTime = start.clone();
+        viewer.clock.startTime = startTime.clone();
+        viewer.clock.stopTime = stopTime.clone();
+        viewer.clock.currentTime = startTime.clone();
         viewer.clock.clockRange = Cesium.ClockRange.LOOP_STOP; //Loop at the end
         viewer.clock.multiplier = 10;
 
-        //Set timeline to simulation bounds
-        // viewer.timeline.zoomTo(start, stop);
+        // viewer.timeline.zoomTo(startTime, stopTime);
 
-        //Generate a random circular pattern with varying heights.
-        function computeCirclularFlight(lon, lat, radius) {
-            var property = new Cesium.SampledPositionProperty();
-            for (var i = 0; i <= 360; i += 45) {
-                var radians = Cesium.Math.toRadians(i);
-                var time = Cesium.JulianDate.addSeconds(start, i, new Cesium.JulianDate());
-                var position = Cesium.Cartesian3.fromDegrees(lon + (radius * 1.5 * Math.cos(radians)), lat + (radius * Math.sin(radians)), Cesium.Math.nextRandomNumber() * 500 + 1750);
-                property.addSample(time, position);
+        // 屏幕空间点击事件
+        const handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+        handler.setInputAction(function (click1) {
+            console.log(click1)
+        }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
 
-                //Also create a point for each sample we generate.
-                viewer.entities.add({
-                    position : position,
-                    point : {
-                        pixelSize : 4,
-                        color : Cesium.Color.TRANSPARENT,
-                        outlineColor : Cesium.Color.YELLOW,
-                        outlineWidth : 1
-                    }
-                });
-            }
-            return property;
-        }
 
-        //Compute the entity position property.
-        var position = computeCirclularFlight(116, 39.9, 3);
-
-        //Actually create the entity
-        var entity = viewer.entities.add({
-
+        let arcEntity = viewer.entities.add({
             //Set the entity availability to the same interval as the simulation time.
-            availability : new Cesium.TimeIntervalCollection([new Cesium.TimeInterval({
-                start : start,
-                stop : stop
+            availability: new Cesium.TimeIntervalCollection([new Cesium.TimeInterval({
+                start: startTime,
+                stop: stopTime
             })]),
 
-            //Use our computed positions
-            position : position,
-
-            //Automatically compute orientation based on position movement.
-            orientation : new Cesium.VelocityOrientationProperty(position),
-
             //Load the Cesium plane model to represent the entity
-            model : {
-                uri : '/asserts/Cesium_Air.gltf',
-                minimumPixelSize : 64
+            model: {
+                uri: '/asserts/Cesium_Air.gltf',
+                minimumPixelSize: 64
             },
-            //Show the path as a pink line sampled in 1 second increments.
-            path : {
-                resolution : 1,
-                material : new Cesium.PolylineGlowMaterialProperty({
-                    glowPower : 0.1,
-                    color : Cesium.Color.YELLOW
+            orientation: new Cesium.VelocityOrientationProperty(property),
+
+            position: property,
+
+            path: {
+                resolution: 1200,
+                material: new Cesium.PolylineGlowMaterialProperty({
+                    glowPower: 0.16,
+                    color: Cesium.Color.fromRandom({
+                        alpha: 1.0
+                    })
                 }),
-                width : 1
+                width: 5,
+                leadTime: 1e10,
+                trailTime: 1e10
             }
         });
-
-        Cesium.when( entity.readyPromise ).then( function( model )
-        {
-
-            model.activeAnimations.addAll( {//播放模型中全部动画，如果需要播放单个动画，可以调用add，传入动画id
-                loop : Cesium.ModelAnimationLoop.REPEAT, //直到被移出activeAnimations，一直播放
-                speedup : 0.5,  //加速播放
-                reverse : true  //逆序播放
-            } );
-        } );
-
-        // var clock = new Cesium.Clock();
-        // var clockViewModel = new Cesium.ClockViewModel(clock);
-        // var viewModel = new Cesium.AnimationViewModel(clockViewModel);
-        // var widget = new Cesium.Animation('cesiumContainer', viewModel);
-        //
-        // function tick() {
-        //     clock.tick();
-        //     Cesium.requestAnimationFrame(tick);
-        // }
-        // Cesium.requestAnimationFrame(tick);
     }
-
-    fly3(Cesium, viewer){
-        var scene = viewer.scene;
-//创建坐标
-        var coord = Cesium.Cartesian3.fromDegrees( -75.62898254394531, 40.02804946899414, 0.0 );
-//创建一个东（X，红色）北（Y，绿色）上（Z，蓝色）的本地坐标系统
-        var modelMatrix = Cesium.Transforms.eastNorthUpToFixedFrame( coord );
-// 改变3D模型的模型矩阵，可以用于移动物体
-// 物体的世界坐标 = 物体的模型坐标 * 世界矩阵
-        var model = scene.primitives.add( Cesium.Model.fromGltf( {//异步的加载模型
-            url : '/asserts/Cesium_Air.gltf',
-            modelMatrix : modelMatrix, //模型矩阵
-            scale : 200.0 //缩放
-        } ) );
-
-        Cesium.when( model.readyPromise ).then( function( model )
-        {
-            model.activeAnimations.addAll( {//播放模型中全部动画，如果需要播放单个动画，可以调用add，传入动画id
-                loop : Cesium.ModelAnimationLoop.REPEAT, //直到被移出activeAnimations，一直播放
-                speedup : 0.5,  //加速播放
-                reverse : true  //逆序播放
-            } );
-        } );
-    }
-
 
     render() {
         return (
