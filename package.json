@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "antd": "^3.3.0",
-    "axios": "^0.16.0",
+    "axios": "^0.20.0",
     "cesium": "^1.43.0",
     "immutability-helper": "^2.2.2",
     "jquery": "^3.2.1",
